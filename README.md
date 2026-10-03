@@ -1,18 +1,9 @@
-# RCPAY9 Store
+# RCPAY9 Admin Panel
 
-## Run locally
-1. Install Node.js LTS.
-2. Open this folder in a terminal.
-3. Run:
-   npm install
-   npm run dev
-4. Open the localhost URL shown by Vite.
+Connected to Supabase Auth and the public.orders table.
 
-## Deploy to Vercel
-Push the folder to GitHub, import the repository into Vercel, and use:
-- Build command: `npm run build`
-- Output directory: `dist`
+Environment variables required in Vercel:
+- VITE_SUPABASE_URL
+- VITE_SUPABASE_PUBLISHABLE_KEY
 
-## Current phase
-This version includes the storefront, cart, checkout form, local order confirmation, and local order tracking.
-The payment gateway and real server/database are intentionally NOT connected yet. They should be added after the UI/order flow is tested.
+Do not put a Supabase secret/service-role key in the frontend.
