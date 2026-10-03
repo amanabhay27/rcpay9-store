@@ -1,9 +1,14 @@
-# RCPAY9 Admin Panel
+# StyleHu Zone Store
 
-Connected to Supabase Auth and the public.orders table.
+Customer store with manual UPI payment verification.
 
-Environment variables required in Vercel:
-- VITE_SUPABASE_URL
-- VITE_SUPABASE_PUBLISHABLE_KEY
+## UPI
+UPI ID: bharatsingh6688@axl
 
-Do not put a Supabase secret/service-role key in the frontend.
+## Vercel environment variables
+- SUPABASE_URL = Supabase project URL
+- SUPABASE_SERVICE_ROLE_KEY = Supabase service-role key (server-side only; never put it in VITE_ variables or frontend code)
+
+The browser creates a pending order through `/api/create-order`. The admin verifies the UPI payment. The browser polls `/api/order-status` and shows Order Confirmed after the admin changes the order to Confirmed/Shipped/Delivered.
+
+Never expose `SUPABASE_SERVICE_ROLE_KEY` to the browser or commit it to GitHub.
