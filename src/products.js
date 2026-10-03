@@ -8,7 +8,9 @@ export const products = [
     advance: 499,
     cod: 500,
     badge: "MEGA SALE",
-    image: "/products/product-1.jpg",
+    image: "/product-1.jpg",
+    rating: 4.5,
+    ratings: 8107
   },
 
   {
@@ -20,7 +22,9 @@ export const products = [
     advance: 366,
     cod: 400,
     badge: "HOT DEAL",
-    image: "/products/product-2.jpg",
+    image: "/product-2.jpg",
+    rating: 4.5,
+    ratings: 5471
   },
 
   {
@@ -32,7 +36,9 @@ export const products = [
     advance: 499,
     cod: 500,
     badge: "BEST SELLER",
-    image: "/products/product-3.jpg",
+    image: "/product-3.jpg",
+    rating: 4.5,
+    ratings: 5263
   },
 
   {
@@ -44,7 +50,9 @@ export const products = [
     advance: 399,
     cod: 500,
     badge: "TRENDING",
-    image: "/products/product-4.jpg",
+    image: "/product-4.jpg",
+    rating: 4.5,
+    ratings: 2626
   },
 
   {
@@ -56,7 +64,9 @@ export const products = [
     advance: 399,
     cod: 400,
     badge: "ROYAL DEAL",
-    image: "/products/product-5.jpg",
+    image: "/product-5.jpg",
+    rating: 4.5,
+    ratings: 3241
   },
 
   {
@@ -68,6 +78,8 @@ export const products = [
     advance: 599,
     cod: 600,
     badge: "PREMIUM",
-    image: "/products/product-6.jpg",
-  },
+    image: "/product-6.jpg",
+    rating: 4.5,
+    ratings: 4182
+  }
 ];
