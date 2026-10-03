@@ -1,808 +1,1059 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { createRoot } from "react-dom/client";
-import { products } from "./products";
-import "./styles.css";
-
-const UPI_ID = "bharatsingh6688@axl";
-const STORE_NAME = "Flikart";
-
-function SaleTimer() {
-  const [seconds, setSeconds] = useState(600);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setSeconds((s) => (s <= 0 ? 600 : s - 1));
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
-
-  return (
-    <div className="sale-timer">
-      <span>Live Sale:</span>{" "}
-      <b>
-        {String(Math.floor(seconds / 60)).padStart(2, "0")}:
-        {String(seconds % 60).padStart(2, "0")}
-      </b>
-    </div>
-  );
+* {
+  box-sizing: border-box;
 }
 
-function Header({ search, setSearch, setPage, cartCount }) {
-  return (
-    <>
-      <header className="desktop-header">
-        <button className="desktop-logo" onClick={() => setPage("home")}>
-          <span className="logo-icon">F</span>
-          Flikart
-        </button>
-
-        <div className="desktop-search">
-          <span>⌕</span>
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search for Products"
-          />
-        </div>
-
-        <button className="desktop-cart" onClick={() => setPage("cart")}>
-          🛒 Cart {cartCount > 0 ? `(${cartCount})` : ""}
-        </button>
-      </header>
-
-      <header className="mobile-header">
-        <div className="mobile-top">
-          <button className="mobile-logo" onClick={() => setPage("home")}>
-            <span className="logo-icon">F</span>
-            Flikart
-          </button>
-
-          <button className="mobile-cart" onClick={() => setPage("cart")}>
-            🛒
-            {cartCount > 0 && <i>{cartCount}</i>}
-          </button>
-        </div>
-
-        <div className="search-box">
-          <span>⌕</span>
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search for Product"
-          />
-        </div>
-      </header>
-    </>
-  );
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f1f3f6;
+  color: #212121;
 }
 
-function Categories({ setPage }) {
-  const categories = [
-    ["🛍️", "For You"],
-    ["👕", "Fashion"],
-    ["👞", "Footwear"],
-    ["⌚", "Watches"],
-    ["🎒", "Accessories"],
-    ["💎", "Premium"],
-  ];
-
-  return (
-    <div className="categories">
-      {categories.map(([icon, name], index) => (
-        <button
-          key={name}
-          className={`category ${index === 0 ? "active" : ""}`}
-          onClick={() => setPage("shop")}
-        >
-          <span>{icon}</span>
-          <b>{name}</b>
-        </button>
-      ))}
-    </div>
-  );
+body {
+  overflow-x: hidden;
 }
 
-function ProductCard({ product, openProduct }) {
-  const discount = Math.round(
-    ((product.mrp - product.price) / product.mrp) * 100
-  );
-
-  return (
-    <article className="product-card" onClick={() => openProduct(product)}>
-      <div className="product-image-wrap">
-        {product.badge && (
-          <span className="product-badge">{product.badge}</span>
-        )}
-
-        <img
-          src={product.image}
-          alt={product.name}
-          className="product-image"
-        />
-      </div>
-
-      <div className="product-info">
-        <h3>{product.name}</h3>
-
-        <p className="product-short">{product.short}</p>
-
-        <div className="discount-row">
-          <span>{discount}% Off</span>
-          <del>₹{product.mrp}</del>
-        </div>
-
-        <div className="price-row">
-          <strong>₹{product.price}</strong>
-          <span className="assured">✓ Assured</span>
-        </div>
-
-        <div className="rating-row">
-          <span className="rating">4.5 ★</span>
-          <span>{2500 + product.id * 713} Ratings</span>
-        </div>
-
-        <p className="delivery">Free Delivery</p>
-
-        <div className="tap-hint">Tap to view product</div>
-      </div>
-    </article>
-  );
+button,
+input,
+textarea {
+  font: inherit;
 }
 
-function Home({ search, setPage, openProduct }) {
-  const filtered = useMemo(() => {
-    const query = search.trim().toLowerCase();
-
-    if (!query) return products;
-
-    return products.filter((product) =>
-      `${product.name} ${product.short}`.toLowerCase().includes(query)
-    );
-  }, [search]);
-
-  return (
-    <main>
-      <Categories setPage={setPage} />
-
-      <section className="sale-banner">
-        <div className="banner-content">
-          <small>FLIKART SPECIAL</small>
-          <h1>MEGA FASHION SALE</h1>
-          <p>Premium combos at special prices</p>
-        </div>
-      </section>
-
-      <section className="live-sale">
-        <SaleTimer />
-
-        <div className="watching">
-          <span></span>
-          14,352 people watching
-        </div>
-      </section>
-
-      <section className="products-area">
-        <div className="section-heading">
-          <div>
-            <h2>Best Deals For You</h2>
-            <p>Tap any product to view details</p>
-          </div>
-
-          <button onClick={() => setPage("shop")}>View All</button>
-        </div>
-
-        <div className="product-grid">
-          {filtered.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              openProduct={openProduct}
-            />
-          ))}
-        </div>
-
-        {filtered.length === 0 && (
-          <div className="empty-box">
-            <div>🔍</div>
-            <h3>No product found</h3>
-          </div>
-        )}
-      </section>
-    </main>
-  );
+button {
+  cursor: pointer;
 }
 
-function Shop({ search, openProduct }) {
-  const filtered = products.filter((product) =>
-    `${product.name} ${product.short}`
-      .toLowerCase()
-      .includes(search.toLowerCase())
-  );
-
-  return (
-    <main className="page">
-      <div className="page-heading">
-        <div>
-          <h2>All Products</h2>
-          <p>Flikart premium collection</p>
-        </div>
-
-        <span>{filtered.length} items</span>
-      </div>
-
-      <div className="product-grid">
-        {filtered.map((product) => (
-          <ProductCard
-            key={product.id}
-            product={product}
-            openProduct={openProduct}
-          />
-        ))}
-      </div>
-    </main>
-  );
+.app {
+  min-height: 100vh;
+  padding-bottom: 25px;
 }
 
-function ProductDetails({ product, setPage, addToCart, buyNow }) {
-  if (!product) return null;
+/* HEADER */
 
-  const discount = Math.round(
-    ((product.mrp - product.price) / product.mrp) * 100
-  );
-
-  return (
-    <main className="details-page">
-      <button className="back-button" onClick={() => setPage("home")}>
-        ← Back
-      </button>
-
-      <div className="details-card">
-        <div className="details-image-box">
-          {product.badge && (
-            <span className="details-badge">{product.badge}</span>
-          )}
-
-          <img src={product.image} alt={product.name} />
-        </div>
-
-        <div className="details-info">
-          <h1>{product.name}</h1>
-
-          <p className="details-short">{product.short}</p>
-
-          <div className="details-rating">
-            <span>4.5 ★</span>
-            <b>Trusted Product</b>
-          </div>
-
-          <div className="details-price">
-            <strong>₹{product.price}</strong>
-            <del>₹{product.mrp}</del>
-            <em>{discount}% OFF</em>
-          </div>
-
-          <div className="offer-box">
-            <b>Special Flikart Offer</b>
-            <span>Limited-time deal on this product</span>
-          </div>
-
-          <div className="details-delivery">🚚 Free Delivery</div>
-
-          <div className="payment-info">
-            <b>Advance: ₹{product.advance}</b>
-            <span>COD: ₹{product.cod}</span>
-          </div>
-
-          <div className="details-buttons">
-            <button
-              className="detail-cart"
-              onClick={() => addToCart(product)}
-            >
-              ADD TO CART
-            </button>
-
-            <button
-              className="detail-buy"
-              onClick={() => buyNow(product)}
-            >
-              BUY NOW
-            </button>
-          </div>
-        </div>
-      </div>
-    </main>
-  );
+.desktop-header {
+  height: 64px;
+  background: #2874f0;
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  padding: 0 7%;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
-function Cart({ cart, setPage, updateQty, removeItem }) {
-  const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
-
-  return (
-    <main className="page cart-page">
-      <h2>My Cart</h2>
-
-      {!cart.length ? (
-        <div className="empty-box">
-          <div>🛒</div>
-          <h3>Your cart is empty</h3>
-
-          <button onClick={() => setPage("home")}>
-            Continue Shopping
-          </button>
-        </div>
-      ) : (
-        <>
-          <div className="cart-list">
-            {cart.map((item) => (
-              <div className="cart-item" key={item.id}>
-                <img src={item.image} alt={item.name} />
-
-                <div className="cart-item-info">
-                  <h3>{item.name}</h3>
-                  <p>{item.short}</p>
-                  <strong>₹{item.price}</strong>
-
-                  <div className="quantity">
-                    <button onClick={() => updateQty(item.id, -1)}>−</button>
-                    <span>{item.qty}</span>
-                    <button onClick={() => updateQty(item.id, 1)}>+</button>
-                  </div>
-
-                  <button
-                    className="remove-btn"
-                    onClick={() => removeItem(item.id)}
-                  >
-                    Remove
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="cart-total">
-            <span>Total Amount</span>
-            <strong>₹{total}</strong>
-          </div>
-
-          <button className="full-action" onClick={() => setPage("checkout")}>
-            PLACE ORDER
-          </button>
-        </>
-      )}
-    </main>
-  );
+.desktop-logo {
+  border: 0;
+  background: transparent;
+  color: white;
+  font-size: 27px;
+  font-weight: 800;
+  min-width: 130px;
 }
 
-function Checkout({ cart, setPage, setOrder }) {
-  const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
-  const first = cart[0];
+.logo-icon {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 31px;
+  height: 31px;
+  background: white;
+  color: #2874f0;
+  border-radius: 6px;
+  margin-right: 6px;
+}
 
-  const [form, setForm] = useState({
-    name: "",
-    phone: "",
-    address: "",
-    pincode: "",
-  });
+.desktop-search {
+  height: 42px;
+  background: white;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  max-width: 680px;
+  border-radius: 2px;
+}
 
-  const [loading, setLoading] = useState(false);
+.desktop-search span {
+  padding: 0 12px;
+  font-size: 24px;
+  color: #777;
+}
 
-  async function submit(event) {
-    event.preventDefault();
+.desktop-search input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+}
 
-    if (!form.name || !form.phone || !form.address || !form.pincode) {
-      alert("Please fill all details.");
-      return;
-    }
+.desktop-cart {
+  border: 0;
+  background: transparent;
+  color: white;
+  font-weight: 700;
+  font-size: 16px;
+}
 
-    setLoading(true);
+.mobile-header {
+  display: none;
+}
 
-    try {
-      const response = await fetch("/api/create-order", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          customer_name: form.name,
-          phone: form.phone,
-          address: `${form.address}, ${form.pincode}`,
-          product_name: first.name,
-          quantity: cart.reduce((sum, item) => sum + item.qty, 0),
-          total_amount: total,
-          advance_amount: first.advance,
-          cod_amount: first.cod,
-          payment_method: "UPI",
-          payment_status: "Pending",
-          order_status: "Pending",
-        }),
-      });
+/* CATEGORIES */
 
-      const data = await response.json();
+.categories {
+  background: white;
+  display: flex;
+  justify-content: center;
+  gap: 48px;
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+}
 
-      if (!response.ok) {
-        throw new Error(data.error || "Order failed");
-      }
+.category {
+  border: 0;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 65px;
+}
 
-      setOrder({
-        id: data.id,
-        total,
-        advance: first.advance,
-        customer: form.name,
-      });
+.category span {
+  font-size: 23px;
+}
 
-      setPage("payment");
-    } catch (error) {
-      alert(error.message);
-    } finally {
-      setLoading(false);
-    }
+.category b {
+  font-size: 12px;
+}
+
+.category.active {
+  color: #2874f0;
+}
+
+/* BANNER */
+
+.sale-banner {
+  width: min(1200px, 96%);
+  height: 270px;
+  margin: 12px auto 0;
+  overflow: hidden;
+  background: linear-gradient(135deg, #071b44, #2874f0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+}
+
+.banner-content small {
+  letter-spacing: 3px;
+  font-weight: 700;
+}
+
+.banner-content h1 {
+  margin: 12px 0;
+  font-size: 42px;
+}
+
+.banner-content p {
+  margin: 0;
+  font-size: 18px;
+}
+
+/* TIMER */
+
+.live-sale {
+  width: min(1200px, 96%);
+  min-height: 52px;
+  margin: 8px auto;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+}
+
+.sale-timer {
+  font-size: 14px;
+}
+
+.sale-timer b {
+  color: #e53935;
+}
+
+.watching {
+  color: #666;
+  font-size: 12px;
+}
+
+.watching span {
+  width: 8px;
+  height: 8px;
+  display: inline-block;
+  border-radius: 50%;
+  background: #16a34a;
+  margin-right: 5px;
+}
+
+/* PRODUCTS */
+
+.products-area,
+.page {
+  width: min(1200px, 96%);
+  margin: 10px auto;
+}
+
+.section-heading,
+.page-heading {
+  background: white;
+  padding: 17px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 7px;
+}
+
+.section-heading h2,
+.page-heading h2 {
+  margin: 0;
+  font-size: 21px;
+}
+
+.section-heading p,
+.page-heading p {
+  margin: 4px 0 0;
+  color: #777;
+  font-size: 12px;
+}
+
+.section-heading button {
+  border: 0;
+  background: #2874f0;
+  color: white;
+  padding: 9px 16px;
+  font-weight: 700;
+}
+
+/* PRODUCT GRID */
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.product-card {
+  background: white;
+  border: 1px solid #ddd;
+  overflow: hidden;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.product-card:hover {
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-1px);
+}
+
+.product-image-wrap {
+  position: relative;
+  height: 300px;
+  background: white;
+}
+
+.product-image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  padding: 7px;
+}
+
+.product-badge,
+.details-badge {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  z-index: 2;
+  background: #2874f0;
+  color: white;
+  padding: 5px 8px;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.product-info {
+  padding: 10px 12px 12px;
+}
+
+.product-info h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.product-short {
+  color: #777;
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 5px 0;
+}
+
+.discount-row {
+  display: flex;
+  gap: 8px;
+}
+
+.discount-row span {
+  color: #388e3c;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.discount-row del {
+  color: #777;
+  font-size: 12px;
+}
+
+.price-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+}
+
+.price-row strong {
+  font-size: 21px;
+}
+
+.assured {
+  background: #2874f0;
+  color: white;
+  padding: 3px 7px;
+  border-radius: 10px;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.rating-row {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  color: #777;
+  font-size: 11px;
+  margin-top: 7px;
+}
+
+.rating {
+  background: #388e3c;
+  color: white;
+  padding: 4px 6px;
+  border-radius: 3px;
+  font-weight: 700;
+}
+
+.delivery {
+  font-size: 12px;
+  margin: 8px 0 5px;
+}
+
+.tap-hint {
+  color: #2874f0;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* DETAILS */
+
+.details-page {
+  width: min(1100px, 96%);
+  margin: 18px auto;
+}
+
+.back-button {
+  border: 0;
+  background: white;
+  padding: 10px 18px;
+  margin-bottom: 10px;
+  color: #2874f0;
+  font-weight: 700;
+}
+
+.details-card {
+  background: white;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+  padding: 25px;
+}
+
+.details-image-box {
+  position: relative;
+  min-height: 480px;
+  background: white;
+}
+
+.details-image-box img {
+  width: 100%;
+  height: 480px;
+  object-fit: contain;
+}
+
+.details-info {
+  padding: 20px 10px;
+}
+
+.details-info h1 {
+  font-size: 28px;
+  margin: 0 0 10px;
+}
+
+.details-short {
+  color: #666;
+  line-height: 1.6;
+}
+
+.details-rating {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.details-rating span {
+  background: #388e3c;
+  color: white;
+  padding: 6px 9px;
+  border-radius: 3px;
+}
+
+.details-price {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.details-price strong {
+  font-size: 34px;
+}
+
+.details-price del {
+  color: #777;
+}
+
+.details-price em {
+  color: #388e3c;
+  font-style: normal;
+  font-weight: 700;
+}
+
+.offer-box {
+  margin: 25px 0;
+  padding: 15px;
+  background: #f5f8ff;
+  border: 1px solid #dbe7ff;
+}
+
+.offer-box b,
+.offer-box span {
+  display: block;
+}
+
+.offer-box span {
+  margin-top: 5px;
+  color: #666;
+  font-size: 13px;
+}
+
+.details-delivery {
+  margin: 18px 0 10px;
+  font-weight: 600;
+}
+
+.payment-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 20px;
+}
+
+.payment-info span {
+  color: #666;
+}
+
+.details-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.details-buttons button {
+  border: 0;
+  color: white;
+  padding: 15px;
+  font-weight: 800;
+}
+
+.detail-cart {
+  background: #ff9f00;
+}
+
+.detail-buy {
+  background: #fb641b;
+}
+
+/* CART */
+
+.empty-box {
+  background: white;
+  padding: 40px;
+  text-align: center;
+}
+
+.empty-box > div {
+  font-size: 55px;
+}
+
+.empty-box button {
+  border: 0;
+  background: #2874f0;
+  color: white;
+  padding: 12px 20px;
+  font-weight: 700;
+}
+
+.cart-list {
+  background: white;
+}
+
+.cart-item {
+  display: flex;
+  gap: 18px;
+  padding: 18px;
+  border-bottom: 1px solid #eee;
+}
+
+.cart-item img {
+  width: 140px;
+  height: 140px;
+  object-fit: contain;
+}
+
+.cart-item-info {
+  flex: 1;
+}
+
+.quantity {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin: 14px 0;
+}
+
+.quantity button {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #ddd;
+  background: white;
+}
+
+.remove-btn {
+  border: 0;
+  background: transparent;
+  color: #2874f0;
+}
+
+.cart-total {
+  background: white;
+  margin-top: 7px;
+  padding: 18px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.full-action {
+  width: 100%;
+  border: 0;
+  background: #2874f0;
+  color: white;
+  padding: 14px;
+  font-weight: 800;
+  margin-top: 10px;
+}
+
+/* FORMS */
+
+.checkout-page {
+  max-width: 650px;
+}
+
+.form-card {
+  background: white;
+  padding: 30px;
+}
+
+.form-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.form-card input,
+.form-card textarea {
+  width: 100%;
+  border: 1px solid #ddd;
+  padding: 13px;
+  outline: none;
+}
+
+.form-card textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.checkout-total {
+  background: #f5f5f5;
+  padding: 14px;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* PAYMENT */
+
+.center-page {
+  min-height: 500px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.payment-card,
+.success-card {
+  background: white;
+  width: min(450px, 100%);
+  padding: 30px;
+  text-align: center;
+}
+
+.payment-icon {
+  font-size: 45px;
+}
+
+.payment-amount {
+  font-size: 32px;
+  font-weight: 800;
+  margin: 15px;
+}
+
+.upi-box {
+  background: #f5f5f5;
+  padding: 15px;
+  margin: 15px 0;
+}
+
+.upi-box span,
+.upi-box strong {
+  display: block;
+}
+
+.upi-box span {
+  color: #777;
+  font-size: 12px;
+}
+
+.pay-button {
+  display: block;
+  background: #2874f0;
+  color: white;
+  padding: 14px;
+  text-decoration: none;
+  font-weight: 800;
+}
+
+.pending-status {
+  margin: 18px 0;
+  color: #777;
+  font-size: 13px;
+}
+
+.success-icon {
+  width: 65px;
+  height: 65px;
+  background: #16a34a;
+  color: white;
+  border-radius: 50%;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 35px;
+}
+
+.track-result {
+  background: #f5f5f5;
+  margin-top: 20px;
+  padding: 15px;
+  text-align: left;
+}
+
+/* FOOTER */
+
+.footer {
+  width: min(1200px, 96%);
+  margin: 25px auto;
+  padding: 30px;
+  background: #172337;
+  color: white;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 25px;
+}
+
+.footer span {
+  display: block;
+  color: #aaa;
+  margin-top: 10px;
+  font-size: 13px;
+}
+
+/* BOTTOM NAV */
+
+.bottom-nav {
+  display: none;
+}
+
+/* MOBILE */
+
+@media (max-width: 700px) {
+  .desktop-header {
+    display: none;
   }
 
-  return (
-    <main className="page checkout-page">
-      <div className="form-card">
-        <h2>Delivery Details</h2>
+  .mobile-header {
+    display: block;
+    background: #2874f0;
+    padding: 9px 10px 11px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
 
-        <form onSubmit={submit}>
-          <input
-            placeholder="Full Name"
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-          />
+  .mobile-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 9px;
+  }
 
-          <input
-            placeholder="Mobile Number"
-            inputMode="numeric"
-            value={form.phone}
-            onChange={(e) => setForm({ ...form, phone: e.target.value })}
-          />
+  .mobile-logo {
+    border: 0;
+    background: transparent;
+    color: white;
+    font-size: 23px;
+    font-weight: 800;
+  }
 
-          <textarea
-            placeholder="Full Address"
-            value={form.address}
-            onChange={(e) => setForm({ ...form, address: e.target.value })}
-          />
+  .mobile-cart {
+    border: 0;
+    background: transparent;
+    color: white;
+    font-size: 21px;
+    position: relative;
+  }
 
-          <input
-            placeholder="Pincode"
-            inputMode="numeric"
-            value={form.pincode}
-            onChange={(e) => setForm({ ...form, pincode: e.target.value })}
-          />
+  .mobile-cart i {
+    position: absolute;
+    right: -6px;
+    top: -5px;
+    background: #ff6161;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    font-size: 9px;
+    font-style: normal;
+  }
 
-          <div className="checkout-total">
-            <span>Total</span>
-            <strong>₹{total}</strong>
-          </div>
+  .search-box {
+    height: 41px;
+    background: white;
+    display: flex;
+    align-items: center;
+  }
 
-          <button className="full-action" disabled={loading}>
-            {loading ? "PROCESSING..." : "CONTINUE TO PAYMENT"}
-          </button>
-        </form>
-      </div>
-    </main>
-  );
+  .search-box span {
+    font-size: 24px;
+    padding: 0 10px;
+    color: #777;
+  }
+
+  .search-box input {
+    border: 0;
+    outline: 0;
+    width: 100%;
+  }
+
+  .categories {
+    justify-content: flex-start;
+    overflow-x: auto;
+    gap: 22px;
+    padding: 9px;
+  }
+
+  .categories::-webkit-scrollbar {
+    display: none;
+  }
+
+  .category {
+    min-width: 60px;
+  }
+
+  .category span {
+    font-size: 21px;
+  }
+
+  .category b {
+    font-size: 10px;
+    white-space: nowrap;
+  }
+
+  .sale-banner {
+    width: 100%;
+    height: 175px;
+    margin: 0;
+  }
+
+  .banner-content h1 {
+    font-size: 27px;
+  }
+
+  .banner-content p {
+    font-size: 12px;
+  }
+
+  .live-sale {
+    width: 100%;
+    margin: 0 0 5px;
+    padding: 9px 10px;
+  }
+
+  .sale-timer {
+    font-size: 11px;
+  }
+
+  .watching {
+    font-size: 9px;
+  }
+
+  .products-area {
+    width: 100%;
+    margin: 0;
+  }
+
+  .section-heading {
+    padding: 11px;
+    margin-bottom: 4px;
+  }
+
+  .section-heading h2 {
+    font-size: 17px;
+  }
+
+  .section-heading p {
+    font-size: 9px;
+  }
+
+  .section-heading button {
+    font-size: 10px;
+    padding: 8px 11px;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px;
+  }
+
+  .product-image-wrap {
+    height: 180px;
+  }
+
+  .product-image {
+    padding: 4px;
+  }
+
+  .product-badge {
+    left: 4px;
+    top: 4px;
+    font-size: 7px;
+    padding: 3px 5px;
+  }
+
+  .product-info {
+    padding: 7px 8px 9px;
+  }
+
+  .product-info h3 {
+    font-size: 12px;
+    line-height: 16px;
+  }
+
+  .product-short {
+    font-size: 8px;
+    margin: 3px 0;
+  }
+
+  .discount-row span {
+    font-size: 10px;
+  }
+
+  .discount-row del {
+    font-size: 9px;
+  }
+
+  .price-row strong {
+    font-size: 17px;
+  }
+
+  .assured {
+    font-size: 7px;
+    padding: 3px 4px;
+  }
+
+  .rating-row {
+    font-size: 8px;
+    margin-top: 5px;
+  }
+
+  .rating {
+    font-size: 8px;
+    padding: 3px 4px;
+  }
+
+  .delivery {
+    font-size: 8px;
+    margin: 6px 0 3px;
+  }
+
+  .tap-hint {
+    font-size: 8px;
+  }
+
+  .details-page {
+    width: 100%;
+    margin: 0;
+    padding-bottom: 70px;
+  }
+
+  .back-button {
+    margin: 8px;
+  }
+
+  .details-card {
+    display: block;
+    padding: 10px;
+  }
+
+  .details-image-box {
+    min-height: 330px;
+  }
+
+  .details-image-box img {
+    height: 330px;
+  }
+
+  .details-info {
+    padding: 15px 5px;
+  }
+
+  .details-info h1 {
+    font-size: 21px;
+  }
+
+  .details-price strong {
+    font-size: 28px;
+  }
+
+  .details-buttons {
+    position: sticky;
+    bottom: 58px;
+    background: white;
+    padding: 8px 0;
+    z-index: 50;
+  }
+
+  .footer {
+    display: none;
+  }
+
+  .bottom-nav {
+    display: grid;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 58px;
+    grid-template-columns: repeat(4, 1fr);
+    background: white;
+    border-top: 1px solid #ddd;
+    z-index: 200;
+  }
+
+  .bottom-nav button {
+    border: 0;
+    background: white;
+    color: #666;
+    font-size: 9px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .bottom-nav button span {
+    font-size: 18px;
+  }
+
+  .bottom-nav .selected {
+    color: #2874f0;
+    font-weight: 700;
+  }
+
+  .cart-page,
+  .page {
+    width: 100%;
+    padding-bottom: 70px;
+    margin: 0;
+  }
+
+  .cart-item {
+    padding: 10px;
+    gap: 9px;
+  }
+
+  .cart-item img {
+    width: 95px;
+    height: 95px;
+  }
+
+  .cart-item-info h3 {
+    font-size: 13px;
+  }
+
+  .cart-item-info p {
+    font-size: 10px;
+  }
+
+  .form-card,
+  .payment-card,
+  .success-card {
+    margin: 10px;
+    padding: 20px;
+  }
 }
-
-function Payment({ order, setPage }) {
-  const [confirmed, setConfirmed] = useState(false);
-
-  useEffect(() => {
-    if (!order?.id) return;
-
-    const interval = setInterval(async () => {
-      try {
-        const response = await fetch(`/api/order-status?id=${order.id}`);
-        const data = await response.json();
-
-        if (
-          data.payment_status === "Confirmed" ||
-          data.order_status === "Confirmed"
-        ) {
-          setConfirmed(true);
-          clearInterval(interval);
-        }
-      } catch {}
-    }, 4000);
-
-    return () => clearInterval(interval);
-  }, [order]);
-
-  if (confirmed) {
-    return (
-      <main className="page center-page">
-        <div className="success-card">
-          <div className="success-icon">✓</div>
-          <h1>Order Confirmed!</h1>
-          <p>Your payment has been verified.</p>
-          <small>Order ID: {order.id}</small>
-
-          <button className="full-action" onClick={() => setPage("track")}>
-            TRACK ORDER
-          </button>
-        </div>
-      </main>
-    );
-  }
-
-  const upiLink =
-    `upi://pay?pa=${encodeURIComponent(UPI_ID)}` +
-    `&pn=${encodeURIComponent(STORE_NAME)}` +
-    `&am=${encodeURIComponent(order.advance)}` +
-    `&cu=INR`;
-
-  return (
-    <main className="page center-page">
-      <div className="payment-card">
-        <div className="payment-icon">💳</div>
-
-        <h2>Complete Payment</h2>
-        <p>Pay the advance amount to confirm your order.</p>
-
-        <div className="payment-amount">₹{order.advance}</div>
-
-        <div className="upi-box">
-          <span>UPI ID</span>
-          <strong>{UPI_ID}</strong>
-        </div>
-
-        <a className="pay-button" href={upiLink}>
-          PAY ₹{order.advance} USING UPI
-        </a>
-
-        <div className="pending-status">
-          <span></span>
-          Waiting for payment verification...
-        </div>
-      </div>
-    </main>
-  );
-}
-
-function Track() {
-  const [id, setId] = useState("");
-  const [order, setOrder] = useState(null);
-
-  async function track(event) {
-    event.preventDefault();
-
-    if (!id.trim()) return;
-
-    try {
-      const response = await fetch(
-        `/api/order-status?id=${encodeURIComponent(id)}`
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Order not found");
-      }
-
-      setOrder(data);
-    } catch (error) {
-      alert(error.message);
-    }
-  }
-
-  return (
-    <main className="page center-page">
-      <div className="form-card track-card">
-        <h2>Track Your Order</h2>
-        <p>Enter your Order ID below.</p>
-
-        <form onSubmit={track}>
-          <input
-            placeholder="Order ID"
-            value={id}
-            onChange={(e) => setId(e.target.value)}
-          />
-
-          <button className="full-action">TRACK ORDER</button>
-        </form>
-
-        {order && (
-          <div className="track-result">
-            <p>
-              <b>Order ID:</b> {order.id}
-            </p>
-            <p>
-              <b>Payment:</b> {order.payment_status}
-            </p>
-            <p>
-              <b>Order:</b> {order.order_status}
-            </p>
-          </div>
-        )}
-      </div>
-    </main>
-  );
-}
-
-function Footer() {
-  return (
-    <footer className="footer">
-      <div>
-        <h3>Flikart</h3>
-        <p>Premium fashion deals at special prices.</p>
-      </div>
-
-      <div>
-        <b>Customer Support</b>
-        <span>Track Order</span>
-        <span>Payment Help</span>
-        <span>Contact Us</span>
-      </div>
-
-      <div>
-        <b>Shopping</b>
-        <span>Fashion</span>
-        <span>Accessories</span>
-        <span>Best Deals</span>
-      </div>
-    </footer>
-  );
-}
-
-function BottomNav({ page, setPage, cartCount }) {
-  return (
-    <nav className="bottom-nav">
-      <button
-        className={page === "home" ? "selected" : ""}
-        onClick={() => setPage("home")}
-      >
-        <span>⌂</span>
-        Home
-      </button>
-
-      <button
-        className={page === "shop" ? "selected" : ""}
-        onClick={() => setPage("shop")}
-      >
-        <span>▦</span>
-        Shop
-      </button>
-
-      <button
-        className={page === "track" ? "selected" : ""}
-        onClick={() => setPage("track")}
-      >
-        <span>📦</span>
-        Orders
-      </button>
-
-      <button
-        className={page === "cart" ? "selected" : ""}
-        onClick={() => setPage("cart")}
-      >
-        <span className="cart-icon">
-          🛒
-          {cartCount > 0 && <i>{cartCount}</i>}
-        </span>
-        Cart
-      </button>
-    </nav>
-  );
-}
-
-function App() {
-  const [page, setPage] = useState("home");
-  const [search, setSearch] = useState("");
-  const [cart, setCart] = useState([]);
-  const [order, setOrder] = useState(null);
-  const [selectedProduct, setSelectedProduct] = useState(null);
-
-  function openProduct(product) {
-    setSelectedProduct(product);
-    setPage("details");
-    window.scrollTo(0, 0);
-  }
-
-  function addToCart(product) {
-    setCart((current) => {
-      const existing = current.find((item) => item.id === product.id);
-
-      if (existing) {
-        return current.map((item) =>
-          item.id === product.id
-            ? { ...item, qty: item.qty + 1 }
-            : item
-        );
-      }
-
-      return [...current, { ...product, qty: 1 }];
-    });
-
-    alert("Product added to cart.");
-  }
-
-  function buyNow(product) {
-    setCart([{ ...product, qty: 1 }]);
-    setPage("checkout");
-    window.scrollTo(0, 0);
-  }
-
-  function updateQty(id, amount) {
-    setCart((current) =>
-      current
-        .map((item) =>
-          item.id === id
-            ? { ...item, qty: item.qty + amount }
-            : item
-        )
-        .filter((item) => item.qty > 0)
-    );
-  }
-
-  function removeItem(id) {
-    setCart((current) => current.filter((item) => item.id !== id));
-  }
-
-  const cartCount = cart.reduce((sum, item) => sum + item.qty, 0);
-
-  return (
-    <div className="app">
-      <Header
-        search={search}
-        setSearch={setSearch}
-        setPage={setPage}
-        cartCount={cartCount}
-      />
-
-      {page === "home" && (
-        <Home
-          search={search}
-          setPage={setPage}
-          openProduct={openProduct}
-        />
-      )}
-
-      {page === "shop" && (
-        <Shop search={search} openProduct={openProduct} />
-      )}
-
-      {page === "details" && (
-        <ProductDetails
-          product={selectedProduct}
-          setPage={setPage}
-          addToCart={addToCart}
-          buyNow={buyNow}
-        />
-      )}
-
-      {page === "cart" && (
-        <Cart
-          cart={cart}
-          setPage={setPage}
-          updateQty={updateQty}
-          removeItem={removeItem}
-        />
-      )}
-
-      {page === "checkout" && (
-        <Checkout
-          cart={cart}
-          setPage={setPage}
-          setOrder={setOrder}
-        />
-      )}
-
-      {page === "payment" && (
-        <Payment order={order} setPage={setPage} />
-      )}
-
-      {page === "track" && <Track />}
-
-      <Footer />
-
-      <BottomNav
-        page={page}
-        setPage={setPage}
-        cartCount={cartCount}
-      />
-    </div>
-  );
-}
-
-createRoot(document.getElementById("root")).render(<App />);
