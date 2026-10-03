@@ -1,7 +1,6 @@
 export default async function handler(req, res) {
   res.setHeader("Content-Type", "application/json");
 
-  // Only POST allowed
   if (req.method !== "POST") {
     return res.status(405).json({
       success: false,
@@ -14,8 +13,13 @@ export default async function handler(req, res) {
     const SUPABASE_SERVICE_ROLE_KEY =
       process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-    // Check Vercel environment variables
+    // Check server environment variables
     if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+      console.error("Missing Supabase environment variables", {
+        hasUrl: !!SUPABASE_URL,
+        hasKey: !!SUPABASE_SERVICE_ROLE_KEY
+      });
+
       return res.status(500).json({
         success: false,
         error:
@@ -40,13 +44,13 @@ export default async function handler(req, res) {
       payment_method
     } = body;
 
-    // Required fields
+    // Validate required fields
     if (
       !customer_name ||
       !phone ||
       !address ||
       !product_name ||
-      !quantity ||
+      quantity === undefined ||
       total_amount === undefined ||
       advance_amount === undefined ||
       cod_amount === undefined
@@ -71,7 +75,7 @@ export default async function handler(req, res) {
       order_status: "Pending"
     };
 
-    // Basic number validation
+    // Validate numbers
     if (
       !Number.isFinite(order.quantity) ||
       !Number.isFinite(order.total_amount) ||
@@ -84,9 +88,10 @@ export default async function handler(req, res) {
       });
     }
 
-    // Insert order into Supabase
+    const supabaseUrl = SUPABASE_URL.replace(/\/$/, "");
+
     const response = await fetch(
-      `${SUPABASE_URL.replace(/\/$/, "")}/rest/v1/orders`,
+      `${supabaseUrl}/rest/v1/orders`,
       {
         method: "POST",
         headers: {
@@ -101,10 +106,12 @@ export default async function handler(req, res) {
 
     const responseText = await response.text();
 
-    let data;
+    let data = null;
 
     try {
-      data = responseText ? JSON.parse(responseText) : null;
+      data = responseText
+        ? JSON.parse(responseText)
+        : null;
     } catch {
       data = {
         raw: responseText
@@ -125,19 +132,23 @@ export default async function handler(req, res) {
       });
     }
 
-    const createdOrder = Array.isArray(data) ? data[0] : data;
+    const createdOrder =
+      Array.isArray(data) ? data[0] : data;
 
     return res.status(200).json({
       success: true,
       message: "Order created successfully.",
       order: createdOrder
     });
+
   } catch (error) {
     console.error("Create order server error:", error);
 
     return res.status(500).json({
       success: false,
-      error: error?.message || "Server error while creating order."
+      error:
+        error?.message ||
+        "Server error while creating order."
     });
   }
 }
