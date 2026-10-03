@@ -1,4 +1,3 @@
-
 export const products = [
   {
     id: 1,
@@ -9,8 +8,9 @@ export const products = [
     advance: 499,
     cod: 500,
     badge: "MEGA SALE",
-    image: "/product-1.jpg"
+    image: "/products/product-1.jpg",
   },
+
   {
     id: 2,
     name: "Boys Premium Accessories Combo",
@@ -20,8 +20,9 @@ export const products = [
     advance: 366,
     cod: 400,
     badge: "HOT DEAL",
-    image: "/product-2.jpg"
+    image: "/products/product-2.jpg",
   },
+
   {
     id: 3,
     name: "Formal Premium Combo",
@@ -31,8 +32,9 @@ export const products = [
     advance: 499,
     cod: 500,
     badge: "BEST SELLER",
-    image: "/product-3.jpg"
+    image: "/products/product-3.jpg",
   },
+
   {
     id: 4,
     name: "Men's Premium Fashion Combo",
@@ -42,8 +44,9 @@ export const products = [
     advance: 399,
     cod: 500,
     badge: "TRENDING",
-    image: "/product-4.jpg"
+    image: "/products/product-4.jpg",
   },
+
   {
     id: 5,
     name: "Royal Accessories Combo",
@@ -53,8 +56,9 @@ export const products = [
     advance: 399,
     cod: 400,
     badge: "ROYAL DEAL",
-    image: "/product-5.jpg"
+    image: "/products/product-5.jpg",
   },
+
   {
     id: 6,
     name: "Complete Men's Style Combo",
@@ -64,6 +68,6 @@ export const products = [
     advance: 599,
     cod: 600,
     badge: "PREMIUM",
-    image: "/product-6.jpg"
-  }
+    image: "/products/product-6.jpg",
+  },
 ];
