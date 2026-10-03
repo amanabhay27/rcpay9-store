@@ -4,7 +4,7 @@ import { products } from "./products";
 import "./styles.css";
 
 const UPI_ID = "bharatsingh6688@axl";
-const STORE_NAME = "ShopKart";
+const STORE_NAME = "Flikart";
 
 function SaleTimer() {
   const [seconds, setSeconds] = useState(600);
@@ -13,6 +13,7 @@ function SaleTimer() {
     const id = setInterval(() => {
       setSeconds((s) => (s <= 0 ? 600 : s - 1));
     }, 1000);
+
     return () => clearInterval(id);
   }, []);
 
@@ -32,9 +33,10 @@ function Header({ search, setSearch, setPage, cartCount }) {
       <header className="mobile-header">
         <div className="brand-tabs">
           <button className="brand-tab active" onClick={() => setPage("home")}>
-            <span className="brand-mark">S</span>
-            <strong>ShopKart</strong>
+            <span className="brand-mark">F</span>
+            <strong>Flikart</strong>
           </button>
+
           <button className="brand-tab" onClick={() => setPage("shop")}>
             <span className="travel-mark">✈</span>
             <strong>Travel</strong>
@@ -53,8 +55,9 @@ function Header({ search, setSearch, setPage, cartCount }) {
 
       <header className="desktop-header">
         <button className="desktop-logo" onClick={() => setPage("home")}>
-          ShopKart
+          Flikart
         </button>
+
         <div className="desktop-search">
           <span>⌕</span>
           <input
@@ -63,6 +66,7 @@ function Header({ search, setSearch, setPage, cartCount }) {
             placeholder="Search for Products, Brands and More"
           />
         </div>
+
         <button className="desktop-cart" onClick={() => setPage("cart")}>
           🛒 Cart {cartCount > 0 ? `(${cartCount})` : ""}
         </button>
@@ -101,6 +105,7 @@ function SaleBanner() {
   return (
     <section className="sale-banner">
       <img src="/hero.png" alt="Mega sale" />
+
       <div className="banner-fallback">
         <small>MEGA FASHION SALE</small>
         <strong>SALE IS LIVE</strong>
@@ -115,6 +120,7 @@ function ProductCard({ product, addToCart, buyNow }) {
     0,
     Math.round(((product.mrp - product.price) / product.mrp) * 100)
   );
+
   const ratings = 3200 + product.id * 827;
 
   return (
@@ -144,10 +150,17 @@ function ProductCard({ product, addToCart, buyNow }) {
         <p className="delivery">Free Delivery in Two Days</p>
 
         <div className="product-actions">
-          <button className="add-btn" onClick={() => addToCart(product)}>
+          <button
+            className="add-btn"
+            onClick={() => addToCart(product)}
+          >
             ADD
           </button>
-          <button className="buy-btn" onClick={() => buyNow(product)}>
+
+          <button
+            className="buy-btn"
+            onClick={() => buyNow(product)}
+          >
             BUY NOW
           </button>
         </div>
@@ -159,7 +172,9 @@ function ProductCard({ product, addToCart, buyNow }) {
 function Home({ search, setPage, addToCart, buyNow }) {
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
+
     if (!q) return products;
+
     return products.filter((p) =>
       `${p.name} ${p.short}`.toLowerCase().includes(q)
     );
@@ -168,10 +183,12 @@ function Home({ search, setPage, addToCart, buyNow }) {
   return (
     <main>
       <Categories setPage={setPage} />
+
       <SaleBanner />
 
       <section className="live-sale">
         <SaleTimer />
+
         <div className="watching">
           <span /> 14,352 People watching this sale
         </div>
@@ -180,7 +197,10 @@ function Home({ search, setPage, addToCart, buyNow }) {
       <section className="products-area">
         <div className="section-heading">
           <h2>Best Deals For You</h2>
-          <button onClick={() => setPage("shop")}>View All</button>
+
+          <button onClick={() => setPage("shop")}>
+            View All
+          </button>
         </div>
 
         <div className="product-grid">
@@ -207,7 +227,9 @@ function Home({ search, setPage, addToCart, buyNow }) {
 
 function Shop({ search, addToCart, buyNow }) {
   const filtered = products.filter((p) =>
-    `${p.name} ${p.short}`.toLowerCase().includes(search.toLowerCase())
+    `${p.name} ${p.short}`
+      .toLowerCase()
+      .includes(search.toLowerCase())
   );
 
   return (
@@ -216,6 +238,7 @@ function Shop({ search, addToCart, buyNow }) {
         <h2>All Products</h2>
         <span>{filtered.length} items</span>
       </div>
+
       <div className="product-grid">
         {filtered.map((p) => (
           <ProductCard
@@ -231,7 +254,10 @@ function Shop({ search, addToCart, buyNow }) {
 }
 
 function Cart({ cart, setPage, updateQty, removeItem }) {
-  const total = cart.reduce((s, p) => s + p.price * p.qty, 0);
+  const total = cart.reduce(
+    (s, p) => s + p.price * p.qty,
+    0
+  );
 
   return (
     <main className="page cart-page">
@@ -240,8 +266,12 @@ function Cart({ cart, setPage, updateQty, removeItem }) {
       {!cart.length ? (
         <div className="empty-box">
           <div>🛒</div>
+
           <h3>Your cart is empty</h3>
-          <button onClick={() => setPage("home")}>Continue Shopping</button>
+
+          <button onClick={() => setPage("home")}>
+            Continue Shopping
+          </button>
         </div>
       ) : (
         <>
@@ -249,18 +279,40 @@ function Cart({ cart, setPage, updateQty, removeItem }) {
             {cart.map((item) => (
               <div className="cart-item" key={item.id}>
                 <img src={item.image} alt={item.name} />
+
                 <div className="cart-item-info">
                   <h3>{item.name}</h3>
+
                   <p>{item.short}</p>
+
                   <strong>₹{item.price}</strong>
 
                   <div className="quantity">
-                    <button onClick={() => updateQty(item.id, -1)}>−</button>
+                    <button
+                      onClick={() =>
+                        updateQty(item.id, -1)
+                      }
+                    >
+                      −
+                    </button>
+
                     <span>{item.qty}</span>
-                    <button onClick={() => updateQty(item.id, 1)}>+</button>
+
+                    <button
+                      onClick={() =>
+                        updateQty(item.id, 1)
+                      }
+                    >
+                      +
+                    </button>
                   </div>
 
-                  <button className="remove-btn" onClick={() => removeItem(item.id)}>
+                  <button
+                    className="remove-btn"
+                    onClick={() =>
+                      removeItem(item.id)
+                    }
+                  >
                     Remove
                   </button>
                 </div>
@@ -273,7 +325,10 @@ function Cart({ cart, setPage, updateQty, removeItem }) {
             <strong>₹{total}</strong>
           </div>
 
-          <button className="full-action" onClick={() => setPage("checkout")}>
+          <button
+            className="full-action"
+            onClick={() => setPage("checkout")}
+          >
             PLACE ORDER
           </button>
         </>
@@ -283,7 +338,11 @@ function Cart({ cart, setPage, updateQty, removeItem }) {
 }
 
 function Checkout({ cart, setPage, setOrder }) {
-  const total = cart.reduce((s, p) => s + p.price * p.qty, 0);
+  const total = cart.reduce(
+    (s, p) => s + p.price * p.qty,
+    0
+  );
+
   const first = cart[0];
 
   const [form, setForm] = useState({
@@ -292,12 +351,18 @@ function Checkout({ cart, setPage, setOrder }) {
     address: "",
     pincode: "",
   });
+
   const [loading, setLoading] = useState(false);
 
   async function submit(e) {
     e.preventDefault();
 
-    if (!form.name || !form.phone || !form.address || !form.pincode) {
+    if (
+      !form.name ||
+      !form.phone ||
+      !form.address ||
+      !form.pincode
+    ) {
       alert("Please fill all details.");
       return;
     }
@@ -307,13 +372,20 @@ function Checkout({ cart, setPage, setOrder }) {
     try {
       const response = await fetch("/api/create-order", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+
+        headers: {
+          "Content-Type": "application/json",
+        },
+
         body: JSON.stringify({
           customer_name: form.name,
           phone: form.phone,
           address: `${form.address}, ${form.pincode}`,
           product_name: first.name,
-          quantity: cart.reduce((s, p) => s + p.qty, 0),
+          quantity: cart.reduce(
+            (s, p) => s + p.qty,
+            0
+          ),
           total_amount: total,
           advance_amount: first.advance,
           cod_amount: first.cod,
@@ -323,15 +395,34 @@ function Checkout({ cart, setPage, setOrder }) {
         }),
       });
 
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Order failed");
+      const responseText = await response.text();
+
+      let data;
+
+      try {
+        data = responseText
+          ? JSON.parse(responseText)
+          : {};
+      } catch {
+        throw new Error(
+          responseText ||
+            "Server returned an invalid response."
+        );
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          data.error || "Order failed"
+        );
+      }
 
       setOrder({
-        id: data.id,
+        id: data.order?.id || data.id,
         total,
         advance: first.advance,
         customer: form.name,
       });
+
       setPage("payment");
     } catch (err) {
       alert(err.message);
@@ -349,24 +440,47 @@ function Checkout({ cart, setPage, setOrder }) {
           <input
             placeholder="Full Name"
             value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                name: e.target.value,
+              })
+            }
           />
+
           <input
             placeholder="Mobile Number"
             inputMode="numeric"
             value={form.phone}
-            onChange={(e) => setForm({ ...form, phone: e.target.value })}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                phone: e.target.value,
+              })
+            }
           />
+
           <textarea
             placeholder="Full Address"
             value={form.address}
-            onChange={(e) => setForm({ ...form, address: e.target.value })}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                address: e.target.value,
+              })
+            }
           />
+
           <input
             placeholder="Pincode"
             inputMode="numeric"
             value={form.pincode}
-            onChange={(e) => setForm({ ...form, pincode: e.target.value })}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                pincode: e.target.value,
+              })
+            }
           />
 
           <div className="checkout-total">
@@ -374,8 +488,13 @@ function Checkout({ cart, setPage, setOrder }) {
             <strong>₹{total}</strong>
           </div>
 
-          <button className="full-action" disabled={loading}>
-            {loading ? "PROCESSING..." : "CONTINUE TO PAYMENT"}
+          <button
+            className="full-action"
+            disabled={loading}
+          >
+            {loading
+              ? "PROCESSING..."
+              : "CONTINUE TO PAYMENT"}
           </button>
         </form>
       </div>
@@ -391,7 +510,12 @@ function Payment({ order, setPage }) {
 
     const interval = setInterval(async () => {
       try {
-        const response = await fetch(`/api/order-status?id=${order.id}`);
+        const response = await fetch(
+          `/api/order-status?id=${encodeURIComponent(
+            order.id
+          )}`
+        );
+
         const data = await response.json();
 
         if (
@@ -412,10 +536,21 @@ function Payment({ order, setPage }) {
       <main className="page center-page">
         <div className="success-card">
           <div className="success-icon">✓</div>
+
           <h1>Order Confirmed!</h1>
-          <p>Your payment has been verified.</p>
-          <small>Order ID: {order.id}</small>
-          <button className="full-action" onClick={() => setPage("track")}>
+
+          <p>
+            Your payment has been verified.
+          </p>
+
+          <small>
+            Order ID: {order.id}
+          </small>
+
+          <button
+            className="full-action"
+            onClick={() => setPage("track")}
+          >
             TRACK ORDER
           </button>
         </div>
@@ -423,26 +558,48 @@ function Payment({ order, setPage }) {
     );
   }
 
+  /*
+   * Current payment process remains the same.
+   * UPI ID remains:
+   * bharatsingh6688@axl
+   */
+
   const upiLink =
     `upi://pay?pa=${encodeURIComponent(UPI_ID)}` +
     `&pn=${encodeURIComponent(STORE_NAME)}` +
-    `&am=${encodeURIComponent(order.advance)}` +
-    `&cu=INR`;
+    `&am=${Number(order.advance).toFixed(2)}` +
+    `&cu=INR` +
+    `&tn=${encodeURIComponent(
+      `Flikart Order ${order.id}`
+    )}`;
 
   return (
     <main className="page center-page">
       <div className="payment-card">
-        <div className="payment-icon">💳</div>
+        <div className="payment-icon">
+          💳
+        </div>
+
         <h2>Complete Payment</h2>
-        <p>Pay the advance amount to confirm your order.</p>
-        <div className="payment-amount">₹{order.advance}</div>
+
+        <p>
+          Pay the advance amount to confirm your order.
+        </p>
+
+        <div className="payment-amount">
+          ₹{order.advance}
+        </div>
 
         <div className="upi-box">
           <span>UPI ID</span>
+
           <strong>{UPI_ID}</strong>
         </div>
 
-        <a className="pay-button" href={upiLink}>
+        <a
+          className="pay-button"
+          href={upiLink}
+        >
           PAY ₹{order.advance} USING UPI
         </a>
 
@@ -451,7 +608,8 @@ function Payment({ order, setPage }) {
         </div>
 
         <small>
-          Your order remains pending until the payment is verified.
+          Your order remains pending until the payment
+          is verified.
         </small>
       </div>
     </main>
@@ -464,12 +622,22 @@ function Track() {
 
   async function track(e) {
     e.preventDefault();
+
     if (!id.trim()) return;
 
     try {
-      const response = await fetch(`/api/order-status?id=${encodeURIComponent(id)}`);
+      const response = await fetch(
+        `/api/order-status?id=${encodeURIComponent(id)}`
+      );
+
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Order not found");
+
+      if (!response.ok) {
+        throw new Error(
+          data.error || "Order not found"
+        );
+      }
+
       setOrder(data);
     } catch (err) {
       alert(err.message);
@@ -480,22 +648,38 @@ function Track() {
     <main className="page center-page">
       <div className="form-card track-card">
         <h2>Track Your Order</h2>
+
         <p>Enter your Order ID below.</p>
 
         <form onSubmit={track}>
           <input
             placeholder="Order ID"
             value={id}
-            onChange={(e) => setId(e.target.value)}
+            onChange={(e) =>
+              setId(e.target.value)
+            }
           />
-          <button className="full-action">TRACK ORDER</button>
+
+          <button className="full-action">
+            TRACK ORDER
+          </button>
         </form>
 
         {order && (
           <div className="track-result">
-            <p><b>Order ID:</b> {order.id}</p>
-            <p><b>Payment:</b> {order.payment_status}</p>
-            <p><b>Order:</b> {order.order_status}</p>
+            <p>
+              <b>Order ID:</b> {order.id}
+            </p>
+
+            <p>
+              <b>Payment:</b>{" "}
+              {order.payment_status}
+            </p>
+
+            <p>
+              <b>Order:</b>{" "}
+              {order.order_status}
+            </p>
           </div>
         )}
       </div>
@@ -503,20 +687,55 @@ function Track() {
   );
 }
 
-function BottomNav({ page, setPage, cartCount }) {
+function BottomNav({
+  page,
+  setPage,
+  cartCount,
+}) {
   return (
     <nav className="bottom-nav">
-      <button className={page === "home" ? "selected" : ""} onClick={() => setPage("home")}>
-        <span>⌂</span>Home
+      <button
+        className={
+          page === "home" ? "selected" : ""
+        }
+        onClick={() => setPage("home")}
+      >
+        <span>⌂</span>
+        Home
       </button>
-      <button className={page === "shop" ? "selected" : ""} onClick={() => setPage("shop")}>
-        <span>▦</span>Categories
+
+      <button
+        className={
+          page === "shop" ? "selected" : ""
+        }
+        onClick={() => setPage("shop")}
+      >
+        <span>▦</span>
+        Categories
       </button>
-      <button className={page === "track" ? "selected" : ""} onClick={() => setPage("track")}>
-        <span>📦</span>Orders
+
+      <button
+        className={
+          page === "track" ? "selected" : ""
+        }
+        onClick={() => setPage("track")}
+      >
+        <span>📦</span>
+        Orders
       </button>
-      <button className={page === "cart" ? "selected" : ""} onClick={() => setPage("cart")}>
-        <span className="cart-icon">🛒{cartCount > 0 && <i>{cartCount}</i>}</span>
+
+      <button
+        className={
+          page === "cart" ? "selected" : ""
+        }
+        onClick={() => setPage("cart")}
+      >
+        <span className="cart-icon">
+          🛒
+          {cartCount > 0 && (
+            <i>{cartCount}</i>
+          )}
+        </span>
         Cart
       </button>
     </nav>
@@ -527,17 +746,24 @@ function Footer() {
   return (
     <footer className="footer">
       <div>
-        <h3>ShopKart</h3>
-        <p>Premium fashion deals at special prices.</p>
+        <h3>Flikart</h3>
+
+        <p>
+          Premium fashion deals at special prices.
+        </p>
       </div>
+
       <div>
         <b>Customer Support</b>
+
         <span>Track Order</span>
         <span>Payment Help</span>
         <span>Contact Us</span>
       </div>
+
       <div>
         <b>Shopping</b>
+
         <span>Fashion</span>
         <span>Accessories</span>
         <span>Best Deals</span>
@@ -554,34 +780,67 @@ function App() {
 
   function addToCart(product) {
     setCart((current) => {
-      const existing = current.find((p) => p.id === product.id);
+      const existing = current.find(
+        (p) => p.id === product.id
+      );
+
       if (existing) {
         return current.map((p) =>
-          p.id === product.id ? { ...p, qty: p.qty + 1 } : p
+          p.id === product.id
+            ? {
+                ...p,
+                qty: p.qty + 1,
+              }
+            : p
         );
       }
-      return [...current, { ...product, qty: 1 }];
+
+      return [
+        ...current,
+        {
+          ...product,
+          qty: 1,
+        },
+      ];
     });
   }
 
   function buyNow(product) {
-    setCart([{ ...product, qty: 1 }]);
+    setCart([
+      {
+        ...product,
+        qty: 1,
+      },
+    ]);
+
     setPage("checkout");
   }
 
   function updateQty(id, amount) {
     setCart((current) =>
       current
-        .map((p) => (p.id === id ? { ...p, qty: p.qty + amount } : p))
+        .map((p) =>
+          p.id === id
+            ? {
+                ...p,
+                qty: p.qty + amount,
+              }
+            : p
+        )
         .filter((p) => p.qty > 0)
     );
   }
 
   function removeItem(id) {
-    setCart((current) => current.filter((p) => p.id !== id));
+    setCart((current) =>
+      current.filter((p) => p.id !== id)
+    );
   }
 
-  const cartCount = cart.reduce((sum, p) => sum + p.qty, 0);
+  const cartCount = cart.reduce(
+    (sum, p) => sum + p.qty,
+    0
+  );
 
   return (
     <div className="app">
@@ -619,16 +878,33 @@ function App() {
       )}
 
       {page === "checkout" && (
-        <Checkout cart={cart} setPage={setPage} setOrder={setOrder} />
+        <Checkout
+          cart={cart}
+          setPage={setPage}
+          setOrder={setOrder}
+        />
       )}
 
-      {page === "payment" && <Payment order={order} setPage={setPage} />}
+      {page === "payment" && (
+        <Payment
+          order={order}
+          setPage={setPage}
+        />
+      )}
+
       {page === "track" && <Track />}
 
       <Footer />
-      <BottomNav page={page} setPage={setPage} cartCount={cartCount} />
+
+      <BottomNav
+        page={page}
+        setPage={setPage}
+        cartCount={cartCount}
+      />
     </div>
   );
 }
 
-createRoot(document.getElementById("root")).render(<App />);
+createRoot(
+  document.getElementById("root")
+).render(<App />);
