@@ -1,3 +1,10 @@
+import product1 from "./product-1.jpg";
+import product2 from "./product-2.jpg";
+import product3 from "./product-3.jpg";
+import product4 from "./product-4.jpg";
+import product5 from "./product-5.jpg";
+import product6 from "./product-6.jpg";
+
 export const products = [
   {
     id: 1,
@@ -8,7 +15,7 @@ export const products = [
     advance: 499,
     cod: 500,
     badge: "MEGA SALE",
-    image: "./product-1.jpg"
+    image: product1
   },
   {
     id: 2,
@@ -19,7 +26,7 @@ export const products = [
     advance: 366,
     cod: 400,
     badge: "HOT DEAL",
-    image: "./product-2.jpg"
+    image: product2
   },
   {
     id: 3,
@@ -30,7 +37,7 @@ export const products = [
     advance: 499,
     cod: 500,
     badge: "BEST SELLER",
-    image: "./product-3.jpg"
+    image: product3
   },
   {
     id: 4,
@@ -41,7 +48,7 @@ export const products = [
     advance: 399,
     cod: 500,
     badge: "TRENDING",
-    image: "./product-4.jpg"
+    image: product4
   },
   {
     id: 5,
@@ -52,7 +59,7 @@ export const products = [
     advance: 399,
     cod: 400,
     badge: "ROYAL DEAL",
-    image: "./product-5.jpg"
+    image: product5
   },
   {
     id: 6,
@@ -63,6 +70,6 @@ export const products = [
     advance: 599,
     cod: 600,
     badge: "PREMIUM",
-    image: "./product-6.jpg"
+    image: product6
   }
 ];
