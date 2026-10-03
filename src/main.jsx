@@ -4,1147 +4,818 @@ import { products } from "./products";
 import "./styles.css";
 
 const UPI_ID = "bharatsingh6688@axl";
-const STORE_NAME = "StyleHu Zone";
-
-const money = (n) => `₹${Number(n || 0).toLocaleString("en-IN")}`;
-
-async function api(path, options = {}) {
-  const res = await fetch(path, {
-    headers: { "Content-Type": "application/json" },
-    ...options,
-  });
-
-  const data = await res.json().catch(() => ({}));
-
-  if (!res.ok) {
-    throw new Error(data.error || "Something went wrong.");
-  }
-
-  return data;
-}
+const STORE_NAME = "Flipkart";
 
 function OfferTimer() {
   const [seconds, setSeconds] = useState(600);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setSeconds((prev) => (prev <= 1 ? 600 : prev - 1));
+      setSeconds((s) => (s <= 0 ? 600 : s - 1));
     }, 1000);
 
     return () => clearInterval(timer);
   }, []);
 
+  const min = String(Math.floor(seconds / 60)).padStart(2, "0");
+  const sec = String(seconds % 60).padStart(2, "0");
+
   return (
-    <div className="offerTimer">
-      <div className="offerTimerTitle">🔥 NAVRATRI SPECIAL OFFER</div>
-      <div className="offerTimerText">
-        Limited-Time Fashion Offers
+    <div className="offer-timer">
+      <span>⚡ Limited Time Offer</span>
+      <strong>{min}:{sec}</strong>
+    </div>
+  );
+}
+
+function Header({ cartCount, setPage, search, setSearch }) {
+  return (
+    <>
+      <header className="fk-header">
+        <div className="fk-header-inner">
+
+          <button className="fk-logo" onClick={() => setPage("home")}>
+            <span>Flipkart</span>
+            <small>Explore Plus ✨</small>
+          </button>
+
+          <div className="fk-search">
+            <span>🔍</span>
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search for products, brands and more"
+            />
+          </div>
+
+          <button className="login-btn" onClick={() => setPage("home")}>
+            Login
+          </button>
+
+          <button className="header-link" onClick={() => setPage("track")}>
+            Track Order
+          </button>
+
+          <button className="cart-btn" onClick={() => setPage("cart")}>
+            🛒 Cart
+            {cartCount > 0 && <b>{cartCount}</b>}
+          </button>
+        </div>
+      </header>
+
+      <div className="category-bar">
+        <div onClick={() => setPage("shop")}>🛍️ Fashion</div>
+        <div onClick={() => setPage("shop")}>👕 Men</div>
+        <div onClick={() => setPage("shop")}>⌚ Watches</div>
+        <div onClick={() => setPage("shop")}>🕶️ Accessories</div>
+        <div onClick={() => setPage("shop")}>👟 Shoes</div>
+        <div onClick={() => setPage("shop")}>🔥 Top Deals</div>
+      </div>
+    </>
+  );
+}
+
+function Hero({ setPage }) {
+  return (
+    <section className="fk-hero">
+      <div className="hero-content">
+        <div>
+          <span className="hero-small">BIG SAVINGS DAYS</span>
+          <h1>MEGA SALE</h1>
+          <h2>Fashion Deals Starting ₹499</h2>
+          <p>Premium fashion & accessories at special prices.</p>
+
+          <button onClick={() => setPage("shop")}>
+            Shop Now →
+          </button>
+        </div>
+
+        <img src="/hero.png" alt="Fashion Sale" />
+      </div>
+    </section>
+  );
+}
+
+function ProductCard({ product, addToCart, buyNow }) {
+  const discount = Math.round(
+    ((product.mrp - product.price) / product.mrp) * 100
+  );
+
+  return (
+    <div className="fk-product-card">
+
+      <div className="product-badge">
+        {product.badge}
       </div>
 
-      <div className="offerTimerClock">
-        {String(Math.floor(seconds / 60)).padStart(2, "0")}:
-        {String(seconds % 60).padStart(2, "0")}
+      <div className="product-image-wrap">
+        <img src={product.image} alt={product.name} />
       </div>
 
-      <div className="offerTimerSmall">
-        Offer refreshes every 10 minutes
+      <div className="product-info">
+        <h3>{product.name}</h3>
+
+        <p className="product-short">
+          {product.short}
+        </p>
+
+        <div className="rating">
+          <span>4.2 ★</span>
+          <small> 1,248 Ratings</small>
+        </div>
+
+        <div className="price-row">
+          <strong>₹{product.price}</strong>
+          <del>₹{product.mrp}</del>
+          <em>{discount}% off</em>
+        </div>
+
+        <p className="delivery">
+          🚚 Free Delivery
+        </p>
+
+        <div className="product-actions">
+          <button
+            className="add-cart"
+            onClick={() => addToCart(product)}
+          >
+            ADD TO CART
+          </button>
+
+          <button
+            className="buy-now"
+            onClick={() => buyNow(product)}
+          >
+            BUY NOW
+          </button>
+        </div>
       </div>
     </div>
   );
 }
 
-function Header({ cartCount, setPage }) {
+function Home({ products, addToCart, buyNow, setPage, search }) {
+  const filtered = useMemo(() => {
+    if (!search.trim()) return products;
+
+    return products.filter((p) =>
+      `${p.name} ${p.short}`
+        .toLowerCase()
+        .includes(search.toLowerCase())
+    );
+  }, [products, search]);
+
   return (
-    <header className="header">
-      <button className="logo" onClick={() => setPage("home")}>
-        <span>StyleHu</span>
-        <b>Zone</b>
-        <small>STYLE • FASHION • YOU</small>
-      </button>
+    <main>
 
-      <nav>
-        <button onClick={() => setPage("home")}>Home</button>
-        <button onClick={() => setPage("shop")}>Shop</button>
-        <button onClick={() => setPage("track")}>Track Order</button>
-        <button onClick={() => setPage("contact")}>Contact</button>
-      </nav>
+      <Hero setPage={setPage} />
 
-      <button className="cartIcon" onClick={() => setPage("cart")}>
-        🛒 <i>{cartCount}</i>
-      </button>
-    </header>
-  );
-}
-
-function SaleBanner() {
-  return (
-    <section className="saleBanner">
-      <div>
-        <strong>🔥 MEGA SALE — NAVRATRI SPECIAL 🔥</strong>
-        <span>Limited-Time Fashion Offers</span>
-      </div>
-    </section>
-  );
-}
-
-function ProductCard({ p, add, buy }) {
-  return (
-    <article className="card">
-      <div className="pic">
-        <img src={p.image} alt={p.name} />
-        <span>{p.badge}</span>
+      <div className="offer-strip">
+        <div>
+          <strong>🔥 MEGA SALE</strong>
+          <span>Limited-Time Fashion Offers</span>
+        </div>
+        <OfferTimer />
       </div>
 
-      <div className="cardBody">
-        <h3>{p.name}</h3>
-        <p>{p.short}</p>
+      <section className="deal-section">
 
-        <div className="prices">
-          <del>{money(p.mrp)}</del>
-          <strong>{money(p.price)}</strong>
-        </div>
-
-        <div className="payline">
-          <b>Advance: {money(p.advance)}</b>
-          <span>COD: {money(p.cod)}</span>
-        </div>
-
-        <div className="actions">
-          <button onClick={() => add(p)}>Add to Cart</button>
-          <button className="dark" onClick={() => buy(p)}>
-            Buy Now
-          </button>
-        </div>
-      </div>
-    </article>
-  );
-}
-
-function Home({ add, buy, setPage }) {
-  return (
-    <>
-      <SaleBanner />
-
-      <OfferTimer />
-
-      <section className="hero">
-        <img
-          src="/hero.png"
-          alt="StyleHu Zone Navratri Mega Sale"
-        />
-
-        <div className="heroShade" />
-
-        <div className="heroText">
-          <div className="eyebrow">🔥 NAVRATRI SPECIAL</div>
-
-          <h1>
-            MEGA SALE
-            <br />
-            <em>STYLE COLLECTION</em>
-          </h1>
-
-          <p>
-            Premium fashion combos • Accessories • Everyday style
-          </p>
-
-          <button onClick={() => setPage("shop")}>
-            SHOP NOW →
-          </button>
-        </div>
-
-        <div className="trust">
+        <div className="section-heading">
           <div>
-            ✓ <b>Premium Quality</b>
-            <small>Trusted products</small>
-          </div>
-
-          <div>
-            ✓ <b>Cash on Delivery</b>
-            <small>Pay remaining after delivery</small>
-          </div>
-
-          <div>
-            ✓ <b>Fast Delivery</b>
-            <small>Across India</small>
-          </div>
-
-          <div>
-            ✓ <b>Easy Returns</b>
-            <small>7-day policy</small>
-          </div>
-        </div>
-      </section>
-
-      <section className="strip">
-        <div>
-          🔥 <b>NAVRATRI OFFERS</b>
-          <small>Limited-time fashion offers</small>
-        </div>
-
-        <div>
-          🔒 <b>SECURE CHECKOUT</b>
-          <small>Protected order flow</small>
-        </div>
-
-        <div>
-          🚚 <b>FAST DELIVERY</b>
-          <small>Across India</small>
-        </div>
-
-        <div>
-          ☎ <b>SUPPORT</b>
-          <small>We're here to help</small>
-        </div>
-      </section>
-
-      <section className="section">
-        <div className="sectionHead">
-          <div>
-            <h2>Featured Products</h2>
-            <p>Six curated combos — choose your style.</p>
+            <h2>Deals of the Day</h2>
+            <p>Grab the best fashion deals before they end</p>
           </div>
 
           <button onClick={() => setPage("shop")}>
-            View All →
+            VIEW ALL
           </button>
         </div>
 
-        <div className="grid">
-          {products.map((p) => (
+        <div className="product-grid">
+          {filtered.map((product) => (
             <ProductCard
-              key={p.id}
-              p={p}
-              add={add}
-              buy={buy}
+              key={product.id}
+              product={product}
+              addToCart={addToCart}
+              buyNow={buyNow}
             />
           ))}
         </div>
+
       </section>
 
-      <section className="why">
-        <h2>Why Choose StyleHu Zone?</h2>
+      <section className="benefits">
+        <div>
+          <span>🚚</span>
+          <strong>Fast Delivery</strong>
+          <small>Get your order quickly</small>
+        </div>
 
-        <div className="whyGrid">
-          <div>
-            ★
-            <b>Curated Combos</b>
-            <span>Convenient value sets</span>
-          </div>
+        <div>
+          <span>💳</span>
+          <strong>Secure Payment</strong>
+          <small>Safe & simple checkout</small>
+        </div>
 
-          <div>
-            🚚
-            <b>Fast Delivery</b>
-            <span>Service across India</span>
-          </div>
+        <div>
+          <span>💰</span>
+          <strong>Best Prices</strong>
+          <small>Special sale prices</small>
+        </div>
 
-          <div>
-            🔐
-            <b>Secure Payments</b>
-            <span>Protected checkout</span>
-          </div>
-
-          <div>
-            ♡
-            <b>Customer Support</b>
-            <span>We're here to help</span>
-          </div>
+        <div>
+          <span>🔒</span>
+          <strong>Secure Shopping</strong>
+          <small>Your details stay protected</small>
         </div>
       </section>
-    </>
+
+    </main>
   );
 }
 
-function Shop({ add, buy }) {
+function Shop({ products, addToCart, buyNow, search }) {
+  const filtered = products.filter((p) =>
+    `${p.name} ${p.short}`
+      .toLowerCase()
+      .includes(search.toLowerCase())
+  );
+
   return (
-    <>
-      <OfferTimer />
+    <main className="shop-page">
 
-      <section className="section shop">
-        <div className="sectionHead">
-          <div>
-            <h1>Shop All Products</h1>
-            <p>
-              Navratri Special — limited-time fashion offers.
-            </p>
-          </div>
-        </div>
+      <div className="shop-heading">
+        <h1>All Products</h1>
+        <span>{filtered.length} Products</span>
+      </div>
 
-        <div className="grid">
-          {products.map((p) => (
-            <ProductCard
-              key={p.id}
-              p={p}
-              add={add}
-              buy={buy}
-            />
-          ))}
-        </div>
-      </section>
-    </>
+      <div className="product-grid">
+        {filtered.map((product) => (
+          <ProductCard
+            key={product.id}
+            product={product}
+            addToCart={addToCart}
+            buyNow={buyNow}
+          />
+        ))}
+      </div>
+
+    </main>
   );
 }
 
-function Cart({
-  cart,
-  setPage,
-  remove,
-  changeQty,
-}) {
+function Cart({ cart, setPage, updateQty, removeItem }) {
   const total = cart.reduce(
-    (s, x) => s + x.price * x.qty,
+    (sum, item) => sum + item.price * item.qty,
     0
   );
-
-  const advance = cart.reduce(
-    (s, x) => s + x.advance * x.qty,
-    0
-  );
-
-  const cod = total - advance;
 
   if (!cart.length) {
     return (
-      <section className="empty">
-        <h1>Your cart is empty</h1>
-        <p>Add a combo to get started.</p>
-
-        <button onClick={() => setPage("shop")}>
-          Shop Products
-        </button>
-      </section>
+      <main className="empty-page">
+        <div className="empty-box">
+          <div>🛒</div>
+          <h2>Your cart is empty</h2>
+          <p>Add some products to continue shopping.</p>
+          <button onClick={() => setPage("shop")}>
+            Shop Now
+          </button>
+        </div>
+      </main>
     );
   }
 
   return (
-    <section className="section">
-      <h1>Your Cart</h1>
+    <main className="cart-page">
 
-      <div className="cartLayout">
-        <div>
-          {cart.map((x) => (
-            <div className="cartItem" key={x.id}>
-              <img src={x.image} alt={x.name} />
+      <div className="cart-items">
 
-              <div>
-                <h3>{x.name}</h3>
+        <h2>My Cart</h2>
 
-                <p>
-                  {money(x.price)} • Advance{" "}
-                  {money(x.advance)} • COD{" "}
-                  {money(x.cod)}
-                </p>
+        {cart.map((item) => (
+          <div className="cart-item" key={item.id}>
 
-                <div className="qty">
-                  <button
-                    onClick={() =>
-                      changeQty(x.id, -1)
-                    }
-                  >
-                    -
-                  </button>
+            <img src={item.image} alt={item.name} />
 
-                  <b>{x.qty}</b>
+            <div className="cart-item-info">
+              <h3>{item.name}</h3>
+              <p>{item.short}</p>
 
-                  <button
-                    onClick={() =>
-                      changeQty(x.id, 1)
-                    }
-                  >
-                    +
-                  </button>
+              <strong>₹{item.price}</strong>
 
-                  <button
-                    className="remove"
-                    onClick={() => remove(x.id)}
-                  >
-                    Remove
-                  </button>
-                </div>
+              <div className="qty">
+                <button onClick={() => updateQty(item.id, -1)}>
+                  −
+                </button>
+
+                <span>{item.qty}</span>
+
+                <button onClick={() => updateQty(item.id, 1)}>
+                  +
+                </button>
               </div>
+
+              <button
+                className="remove-btn"
+                onClick={() => removeItem(item.id)}
+              >
+                Remove
+              </button>
             </div>
-          ))}
+
+          </div>
+        ))}
+
+      </div>
+
+      <div className="price-box">
+        <h3>PRICE DETAILS</h3>
+
+        <div>
+          <span>Price</span>
+          <strong>₹{total}</strong>
         </div>
 
-        <aside className="summary">
-          <h2>Order Summary</h2>
+        <div>
+          <span>Delivery</span>
+          <strong className="green">FREE</strong>
+        </div>
 
-          <p>
-            Total <b>{money(total)}</b>
-          </p>
+        <hr />
 
-          <p>
-            Advance <b>{money(advance)}</b>
-          </p>
+        <div className="total-row">
+          <span>Total Amount</span>
+          <strong>₹{total}</strong>
+        </div>
 
-          <p>
-            Remaining COD <b>{money(cod)}</b>
-          </p>
-
-          <hr />
-
-          <button
-            onClick={() => setPage("checkout")}
-          >
-            Proceed to Checkout
-          </button>
-        </aside>
+        <button onClick={() => setPage("checkout")}>
+          PLACE ORDER
+        </button>
       </div>
-    </section>
+
+    </main>
   );
 }
 
-function Checkout({ cart, placeOrder }) {
+function Checkout({ cart, setPage, setOrder }) {
+  const total = cart.reduce(
+    (sum, item) => sum + item.price * item.qty,
+    0
+  );
+
   const [form, setForm] = useState({
     name: "",
     phone: "",
-    email: "",
     address: "",
-    city: "",
-    state: "",
-    pincode: "",
+    pincode: ""
   });
 
-  const [error, setError] = useState("");
-  const [busy, setBusy] = useState(false);
-
-  const total = cart.reduce(
-    (s, x) => s + x.price * x.qty,
-    0
-  );
-
-  const advance = cart.reduce(
-    (s, x) => s + x.advance * x.qty,
-    0
-  );
-
-  const cod = total - advance;
-
-  const submit = async (e) => {
-    e.preventDefault();
-
-    setError("");
-
-    if (
-      !form.name.trim() ||
-      !form.phone.trim() ||
-      !form.address.trim() ||
-      !form.city.trim() ||
-      !form.state.trim() ||
-      !form.pincode.trim()
-    ) {
-      setError("Please fill all required fields.");
-      return;
-    }
-
-    if (!/^\d{10}$/.test(form.phone)) {
-      setError(
-        "Enter a valid 10-digit mobile number."
-      );
-      return;
-    }
-
-    if (!/^\d{6}$/.test(form.pincode)) {
-      setError("Enter a valid 6-digit pincode.");
-      return;
-    }
-
-    setBusy(true);
-
-    try {
-      await placeOrder(form, {
-        total,
-        advance,
-        cod,
-        items: cart,
-      });
-    } catch (err) {
-      setError(
-        err?.message || "Unable to create order."
-      );
-      setBusy(false);
-    }
-  };
-
-  const upiLink =
-    `upi://pay?pa=${encodeURIComponent(UPI_ID)}` +
-    `&pn=${encodeURIComponent(STORE_NAME)}` +
-    `&am=${encodeURIComponent(advance)}` +
-    `&cu=INR`;
-
-  return (
-    <section className="section">
-      <h1>Checkout</h1>
-
-      <div className="checkout">
-        <form onSubmit={submit}>
-          <h2>Shipping Details</h2>
-
-          <input
-            placeholder="Full Name"
-            value={form.name}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                name: e.target.value,
-              })
-            }
-            required
-          />
-
-          <input
-            placeholder="Mobile Number"
-            value={form.phone}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                phone: e.target.value,
-              })
-            }
-            required
-          />
-
-          <input
-            type="email"
-            placeholder="Email (optional)"
-            value={form.email}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                email: e.target.value,
-              })
-            }
-          />
-
-          <input
-            placeholder="Full Address"
-            value={form.address}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                address: e.target.value,
-              })
-            }
-            required
-          />
-
-          <input
-            placeholder="City"
-            value={form.city}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                city: e.target.value,
-              })
-            }
-            required
-          />
-
-          <input
-            placeholder="State"
-            value={form.state}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                state: e.target.value,
-              })
-            }
-            required
-          />
-
-          <input
-            placeholder="Pincode"
-            value={form.pincode}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                pincode: e.target.value,
-              })
-            }
-            required
-          />
-
-          {error && (
-            <div className="error">{error}</div>
-          )}
-
-          <button
-            type="submit"
-            disabled={busy}
-          >
-            {busy
-              ? "Creating Order..."
-              : "Continue to UPI Payment"}
-          </button>
-        </form>
-
-        <aside className="summary">
-          <h2>Payment</h2>
-
-          <p>
-            Total <b>{money(total)}</b>
-          </p>
-
-          <p>
-            Advance to Pay <b>{money(advance)}</b>
-          </p>
-
-          <p>
-            Remaining COD <b>{money(cod)}</b>
-          </p>
-
-          <div className="upiBox">
-            <strong>Pay Advance by UPI</strong>
-
-            <div className="upiId">
-              {UPI_ID}
-            </div>
-
-            <button
-              type="button"
-              onClick={() =>
-                navigator.clipboard?.writeText(
-                  UPI_ID
-                )
-              }
-            >
-              Copy UPI ID
-            </button>
-
-            <a
-              className="upiPayButton"
-              href={upiLink}
-            >
-              Open UPI App →
-            </a>
-
-            <small>
-              After paying the exact advance amount,
-              tap “I Have Paid”. Your order stays
-              pending until payment is manually
-              verified.
-            </small>
-          </div>
-        </aside>
-      </div>
-    </section>
-  );
-}
-
-function PaymentPending({ order, setPage }) {
-  const [current, setCurrent] = useState(order);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    let active = true;
-
-    const check = async () => {
-      try {
-        const data = await api(
-          `/api/order-status?id=${encodeURIComponent(
-            order.id
-          )}`
-        );
-
-        if (active && data.order) {
-          setCurrent(data.order);
-
-          if (
-            [
-              "Confirmed",
-              "Shipped",
-              "Delivered",
-            ].includes(data.order.order_status)
-          ) {
-            setTimeout(
-              () => setPage("success"),
-              250
-            );
-          }
-        }
-      } catch (e) {
-        if (active) {
-          setError(
-            e?.message ||
-              "Unable to check order status."
-          );
-        }
-      }
-    };
-
-    check();
-
-    const timer = setInterval(check, 4000);
-
-    return () => {
-      active = false;
-      clearInterval(timer);
-    };
-  }, [order.id, setPage]);
-
-  return (
-    <section className="success">
-      <div className="check">✓</div>
-
-      <h1>Payment Submitted</h1>
-
-      <p>
-        Your order is{" "}
-        <b>
-          {current?.order_status || "Pending"}
-        </b>
-        . We will confirm it after checking the
-        UPI payment.
-      </p>
-
-      <div className="orderBox">
-        <span>
-          Order ID <b>{order.id}</b>
-        </span>
-
-        <span>
-          UPI <b>{UPI_ID}</b>
-        </span>
-
-        <span>
-          Payment{" "}
-          <b>
-            {current?.payment_status ||
-              "Pending"}
-          </b>
-        </span>
-      </div>
-
-      {error && (
-        <div className="error">{error}</div>
-      )}
-
-      <p className="smallNote">
-        Keep this Order ID. This page checks for
-        confirmation automatically.
-      </p>
-
-      <div>
-        <button onClick={() => setPage("track")}>
-          Track Order
-        </button>
-
-        <button
-          className="outline"
-          onClick={() => setPage("home")}
-        >
-          Continue Shopping
-        </button>
-      </div>
-    </section>
-  );
-}
-
-function Success({ order, setPage }) {
-  return (
-    <section className="success">
-      <div className="check">✓</div>
-
-      <h1>Order Confirmed</h1>
-
-      <p>
-        Your payment has been verified and your
-        order is confirmed.
-      </p>
-
-      <div className="orderBox">
-        <span>
-          Order ID <b>{order.id}</b>
-        </span>
-
-        <span>
-          Advance{" "}
-          <b>
-            {money(
-              order.advance_amount ||
-                order.advance
-            )}
-          </b>
-        </span>
-
-        <span>
-          COD{" "}
-          <b>
-            {money(
-              order.cod_amount || order.cod
-            )}
-          </b>
-        </span>
-      </div>
-
-      <div>
-        <button onClick={() => setPage("track")}>
-          Track Order
-        </button>
-
-        <button
-          className="outline"
-          onClick={() => setPage("home")}
-        >
-          Continue Shopping
-        </button>
-      </div>
-    </section>
-  );
-}
-
-function Track() {
-  const [id, setId] = useState("");
-  const [found, setFound] = useState(null);
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const track = async () => {
-    setError("");
-    setFound(null);
+  async function submitOrder(e) {
+    e.preventDefault();
 
-    if (!id.trim()) {
-      setError("Enter your Order ID.");
+    if (!form.name || !form.phone || !form.address || !form.pincode) {
+      alert("Please fill all details.");
       return;
     }
 
     setLoading(true);
 
     try {
-      const data = await api(
-        `/api/order-status?id=${encodeURIComponent(
-          id.trim()
-        )}`
-      );
+      const product = cart[0];
 
-      setFound(data.order || null);
+      const res = await fetch("/api/create-order", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          customer_name: form.name,
+          phone: form.phone,
+          address: `${form.address}, ${form.pincode}`,
+          product_name: product.name,
+          quantity: cart.reduce((s, p) => s + p.qty, 0),
+          total_amount: total,
+          advance_amount: product.advance,
+          cod_amount: product.cod,
+          payment_method: "UPI",
+          payment_status: "Pending",
+          order_status: "Pending"
+        })
+      });
 
-      if (!data.order) {
-        setError("Order not found.");
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Order failed");
       }
-    } catch (e) {
-      setError(
-        e?.message || "Unable to find order."
-      );
-    } finally {
-      setLoading(false);
+
+      setOrder({
+        id: data.id,
+        total,
+        advance: product.advance,
+        customer: form.name
+      });
+
+      setPage("payment");
+
+    } catch (err) {
+      alert(err.message);
     }
-  };
+
+    setLoading(false);
+  }
 
   return (
-    <section className="track">
-      <h1>Track Your Order</h1>
+    <main className="checkout-page">
 
-      <p>
-        Enter your Order ID to check the latest
-        order status.
-      </p>
+      <div className="checkout-form">
 
-      <div className="trackBox">
-        <input
-          value={id}
-          onChange={(e) =>
-            setId(e.target.value)
-          }
-          placeholder="Paste your Order ID"
-        />
+        <h2>Delivery Address</h2>
 
-        <button
-          onClick={track}
-          disabled={loading}
-        >
-          {loading ? "Checking..." : "Track"}
-        </button>
+        <form onSubmit={submitOrder}>
+
+          <input
+            placeholder="Full Name"
+            value={form.name}
+            onChange={(e) =>
+              setForm({ ...form, name: e.target.value })
+            }
+          />
+
+          <input
+            placeholder="Mobile Number"
+            value={form.phone}
+            onChange={(e) =>
+              setForm({ ...form, phone: e.target.value })
+            }
+          />
+
+          <textarea
+            placeholder="Full Address"
+            value={form.address}
+            onChange={(e) =>
+              setForm({ ...form, address: e.target.value })
+            }
+          />
+
+          <input
+            placeholder="Pincode"
+            value={form.pincode}
+            onChange={(e) =>
+              setForm({ ...form, pincode: e.target.value })
+            }
+          />
+
+          <button disabled={loading}>
+            {loading ? "PROCESSING..." : "CONTINUE TO PAYMENT"}
+          </button>
+
+        </form>
+
       </div>
 
-      {error && (
-        <div className="error">{error}</div>
-      )}
+      <div className="checkout-summary">
 
-      {found && (
-        <div className="timeline">
-          <h2>{found.id}</h2>
+        <h3>ORDER SUMMARY</h3>
 
-          <div>
-            ● Order Placed
-            <small>Order received</small>
+        {cart.map((item) => (
+          <div key={item.id}>
+            <span>
+              {item.name} × {item.qty}
+            </span>
+            <strong>₹{item.price * item.qty}</strong>
           </div>
+        ))}
 
-          <div>
-            {found.payment_status === "Paid"
-              ? "●"
-              : "○"}{" "}
-            Payment Verified
-            <small>
-              {found.payment_status ||
-                "Pending"}
-            </small>
-          </div>
+        <hr />
 
-          <div>
-            {found.order_status === "Shipped" ||
-            found.order_status === "Delivered"
-              ? "●"
-              : "○"}{" "}
-            Shipped
-            <small>
-              {found.order_status === "Shipped" ||
-              found.order_status === "Delivered"
-                ? "Shipped"
-                : "Pending"}
-            </small>
-          </div>
-
-          <div>
-            {found.order_status === "Delivered"
-              ? "●"
-              : "○"}{" "}
-            Delivered
-            <small>
-              {found.order_status === "Delivered"
-                ? "Delivered"
-                : "Pending"}
-            </small>
-          </div>
+        <div className="summary-total">
+          <span>Total</span>
+          <strong>₹{total}</strong>
         </div>
-      )}
-    </section>
+
+      </div>
+
+    </main>
+  );
+}
+
+function Payment({ order, setPage }) {
+  const [status, setStatus] = useState("Pending");
+
+  useEffect(() => {
+    if (!order?.id) return;
+
+    const timer = setInterval(async () => {
+      try {
+        const res = await fetch(
+          `/api/order-status?id=${order.id}`
+        );
+
+        const data = await res.json();
+
+        if (
+          data.payment_status === "Confirmed" ||
+          data.order_status === "Confirmed"
+        ) {
+          setStatus("Confirmed");
+          clearInterval(timer);
+        }
+      } catch {}
+    }, 4000);
+
+    return () => clearInterval(timer);
+  }, [order]);
+
+  const upiLink =
+    `upi://pay?pa=${encodeURIComponent(UPI_ID)}` +
+    `&pn=${encodeURIComponent(STORE_NAME)}` +
+    `&am=${encodeURIComponent(order.advance)}` +
+    `&cu=INR`;
+
+  if (status === "Confirmed") {
+    return (
+      <main className="success-page">
+        <div className="success-box">
+          <div>✓</div>
+          <h1>Order Confirmed!</h1>
+          <p>Your payment has been verified.</p>
+          <strong>Order ID: {order.id}</strong>
+
+          <button onClick={() => setPage("track")}>
+            Track Order
+          </button>
+        </div>
+      </main>
+    );
+  }
+
+  return (
+    <main className="payment-page">
+
+      <div className="payment-box">
+
+        <div className="payment-icon">💳</div>
+
+        <h2>Complete Payment</h2>
+
+        <p>Pay advance amount to confirm your order.</p>
+
+        <div className="pay-amount">
+          ₹{order.advance}
+        </div>
+
+        <div className="upi-box">
+          <span>UPI ID</span>
+          <strong>{UPI_ID}</strong>
+        </div>
+
+        <a
+          href={upiLink}
+          className="upi-button"
+        >
+          PAY ₹{order.advance} USING UPI
+        </a>
+
+        <div className="payment-status">
+          <span className="loader"></span>
+          Payment verification pending...
+        </div>
+
+        <small>
+          After payment, our team will verify the transaction.
+          Your order will be confirmed after verification.
+        </small>
+
+      </div>
+
+    </main>
+  );
+}
+
+function Track() {
+  const [id, setId] = useState("");
+  const [order, setOrder] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  async function trackOrder(e) {
+    e.preventDefault();
+
+    if (!id.trim()) return;
+
+    setLoading(true);
+
+    try {
+      const res = await fetch(
+        `/api/order-status?id=${encodeURIComponent(id)}`
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Order not found");
+      }
+
+      setOrder(data);
+
+    } catch (err) {
+      alert(err.message);
+    }
+
+    setLoading(false);
+  }
+
+  return (
+    <main className="track-page">
+
+      <div className="track-box">
+
+        <h1>Track Your Order</h1>
+
+        <p>Enter your order ID to check status.</p>
+
+        <form onSubmit={trackOrder}>
+          <input
+            placeholder="Enter Order ID"
+            value={id}
+            onChange={(e) => setId(e.target.value)}
+          />
+
+          <button>
+            {loading ? "SEARCHING..." : "TRACK ORDER"}
+          </button>
+        </form>
+
+        {order && (
+          <div className="order-result">
+
+            <h3>Order Details</h3>
+
+            <p>
+              <strong>Order ID:</strong> {order.id}
+            </p>
+
+            <p>
+              <strong>Payment:</strong>{" "}
+              {order.payment_status}
+            </p>
+
+            <p>
+              <strong>Order Status:</strong>{" "}
+              {order.order_status}
+            </p>
+
+          </div>
+        )}
+
+      </div>
+
+    </main>
   );
 }
 
 function Footer() {
   return (
-    <footer>
-      <div className="footLogo">
-        StyleHu <b>Zone</b>
-        <small>STYLE • FASHION • YOU</small>
+    <footer className="fk-footer">
+
+      <div>
+        <h3>Flipkart</h3>
+        <p>Premium fashion at special prices.</p>
       </div>
 
       <div>
-        <b>Quick Links</b>
-        <span>Home</span>
-        <span>Shop</span>
-        <span>Track Order</span>
+        <h4>Quick Links</h4>
+        <p>About Us</p>
+        <p>Contact</p>
+        <p>Privacy Policy</p>
       </div>
 
       <div>
-        <b>Customer Support</b>
-        <span>Help Center</span>
-        <span>Return Policy</span>
-        <span>Terms & Conditions</span>
+        <h4>Customer Care</h4>
+        <p>Track Order</p>
+        <p>Payment Help</p>
+        <p>Support</p>
       </div>
 
       <div>
-        <b>Contact</b>
-        <span>support@rcpay9.online</span>
-        <span>India</span>
+        <h4>Secure Shopping</h4>
+        <p>🔒 Safe Payments</p>
+        <p>🚚 Fast Delivery</p>
+        <p>✓ Verified Orders</p>
       </div>
 
-      <p>
-        © 2026 StyleHu Zone. All rights reserved.
-      </p>
     </footer>
   );
 }
 
 function App() {
   const [page, setPage] = useState("home");
+  const [search, setSearch] = useState("");
   const [cart, setCart] = useState([]);
   const [order, setOrder] = useState(null);
 
-  const add = (p) => {
-    setCart((c) => {
-      const old = c.find(
-        (x) => x.id === p.id
+  function addToCart(product) {
+    setCart((old) => {
+      const existing = old.find(
+        (item) => item.id === product.id
       );
 
-      if (old) {
-        return c.map((x) =>
-          x.id === p.id
-            ? { ...x, qty: x.qty + 1 }
-            : x
+      if (existing) {
+        return old.map((item) =>
+          item.id === product.id
+            ? { ...item, qty: item.qty + 1 }
+            : item
         );
       }
 
-      return [...c, { ...p, qty: 1 }];
+      return [...old, { ...product, qty: 1 }];
     });
-  };
+  }
 
-  const buy = (p) => {
-    setCart((c) => {
-      const old = c.find(
-        (x) => x.id === p.id
-      );
+  function buyNow(product) {
+    setCart([{ ...product, qty: 1 }]);
+    setPage("checkout");
+  }
 
-      if (old) {
-        return c.map((x) =>
-          x.id === p.id
-            ? { ...x, qty: x.qty + 1 }
-            : x
-        );
-      }
-
-      return [...c, { ...p, qty: 1 }];
-    });
-
-    setPage("cart");
-  };
-
-  const remove = (id) => {
-    setCart((c) =>
-      c.filter((x) => x.id !== id)
+  function updateQty(id, amount) {
+    setCart((old) =>
+      old
+        .map((item) =>
+          item.id === id
+            ? { ...item, qty: item.qty + amount }
+            : item
+        )
+        .filter((item) => item.qty > 0)
     );
-  };
+  }
 
-  const changeQty = (id, d) => {
-    setCart((c) =>
-      c.map((x) =>
-        x.id === id
-          ? {
-              ...x,
-              qty: Math.max(
-                1,
-                x.qty + d
-              ),
-            }
-          : x
-      )
-    );
-  };
-
-  const placeOrder = async (
-    customer,
-    summary
-  ) => {
-    const itemNames = summary.items
-      .map(
-        (x) => `${x.name} x${x.qty}`
-      )
-      .join(" | ");
-
-    const quantity = summary.items.reduce(
-      (s, x) => s + x.qty,
-      0
-    );
-
-    const data = await api(
-      "/api/create-order",
-      {
-        method: "POST",
-        body: JSON.stringify({
-          customer_name: customer.name,
-          phone: customer.phone,
-
-          address:
-            `${customer.address}, ` +
-            `${customer.city}, ` +
-            `${customer.state} - ` +
-            `${customer.pincode}`,
-
-          product_name: itemNames,
-          quantity,
-
-          total_amount: summary.total,
-          advance_amount: summary.advance,
-          cod_amount: summary.cod,
-
-          payment_method: "UPI",
-          payment_status: "Pending",
-          order_status: "Pending",
-        }),
-      }
-    );
-
-    const saved = data.order;
-
-    localStorage.setItem(
-      "stylehuzone_last_order_id",
-      saved.id
-    );
-
-    setOrder(saved);
-    setCart([]);
-    setPage("paymentPending");
-  };
-
-  let content;
-
-  if (page === "home") {
-    content = (
-      <Home
-        add={add}
-        buy={buy}
-        setPage={setPage}
-      />
-    );
-  } else if (page === "shop") {
-    content = (
-      <Shop
-        add={add}
-        buy={buy}
-      />
-    );
-  } else if (page === "cart") {
-    content = (
-      <Cart
-        cart={cart}
-        setPage={setPage}
-        remove={remove}
-        changeQty={changeQty}
-      />
-    );
-  } else if (page === "checkout") {
-    content = (
-      <Checkout
-        cart={cart}
-        placeOrder={placeOrder}
-      />
-    );
-  } else if (page === "paymentPending") {
-    content = (
-      <PaymentPending
-        order={order}
-        setPage={setPage}
-      />
-    );
-  } else if (page === "success") {
-    content = (
-      <Success
-        order={order}
-        setPage={setPage}
-      />
-    );
-  } else if (page === "track") {
-    content = <Track />;
-  } else {
-    content = (
-      <section className="contact">
-        <h1>Contact StyleHu Zone</h1>
-        <p>
-          For support, contact us at{" "}
-          <b>support@rcpay9.online</b>.
-        </p>
-      </section>
+  function removeItem(id) {
+    setCart((old) =>
+      old.filter((item) => item.id !== id)
     );
   }
 
   return (
     <>
       <Header
-        cartCount={cart.reduce(
-          (s, x) => s + x.qty,
-          0
-        )}
+        cartCount={cart.reduce((s, p) => s + p.qty, 0)}
         setPage={setPage}
+        search={search}
+        setSearch={setSearch}
       />
 
-      {content}
+      {page === "home" && (
+        <Home
+          products={products}
+          addToCart={addToCart}
+          buyNow={buyNow}
+          setPage={setPage}
+          search={search}
+        />
+      )}
+
+      {page === "shop" && (
+        <Shop
+          products={products}
+          addToCart={addToCart}
+          buyNow={buyNow}
+          search={search}
+        />
+      )}
+
+      {page === "cart" && (
+        <Cart
+          cart={cart}
+          setPage={setPage}
+          updateQty={updateQty}
+          removeItem={removeItem}
+        />
+      )}
+
+      {page === "checkout" && (
+        <Checkout
+          cart={cart}
+          setPage={setPage}
+          setOrder={setOrder}
+        />
+      )}
+
+      {page === "payment" && (
+        <Payment
+          order={order}
+          setPage={setPage}
+        />
+      )}
+
+      {page === "track" && <Track />}
 
       <Footer />
     </>
   );
 }
 
-createRoot(
-  document.getElementById("root")
-).render(<App />);
+createRoot(document.getElementById("root")).render(
+  <App />
+);
