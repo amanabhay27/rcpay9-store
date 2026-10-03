@@ -45,6 +45,7 @@ function Header({ search, setSearch, setPage, cartCount }) {
 
         <div className="search-box">
           <span>⌕</span>
+
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -60,6 +61,7 @@ function Header({ search, setSearch, setPage, cartCount }) {
 
         <div className="desktop-search">
           <span>⌕</span>
+
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -372,7 +374,6 @@ function Checkout({ cart, setPage, setOrder }) {
     try {
       const response = await fetch("/api/create-order", {
         method: "POST",
-
         headers: {
           "Content-Type": "application/json",
         },
@@ -395,20 +396,7 @@ function Checkout({ cart, setPage, setOrder }) {
         }),
       });
 
-      const responseText = await response.text();
-
-      let data;
-
-      try {
-        data = responseText
-          ? JSON.parse(responseText)
-          : {};
-      } catch {
-        throw new Error(
-          responseText ||
-            "Server returned an invalid response."
-        );
-      }
+      const data = await response.json();
 
       if (!response.ok) {
         throw new Error(
@@ -416,8 +404,10 @@ function Checkout({ cart, setPage, setOrder }) {
         );
       }
 
+      const createdOrder = data.order || data;
+
       setOrder({
-        id: data.order?.id || data.id,
+        id: createdOrder.id,
         total,
         advance: first.advance,
         customer: form.name,
@@ -511,9 +501,7 @@ function Payment({ order, setPage }) {
     const interval = setInterval(async () => {
       try {
         const response = await fetch(
-          `/api/order-status?id=${encodeURIComponent(
-            order.id
-          )}`
+          `/api/order-status?id=${encodeURIComponent(order.id)}`
         );
 
         const data = await response.json();
@@ -559,26 +547,44 @@ function Payment({ order, setPage }) {
   }
 
   /*
-   * Current payment process remains the same.
-   * UPI ID remains:
-   * bharatsingh6688@axl
-   */
+    FINAL UPI PAYMENT LINK
+
+    NPCI UPI deep-link parameters:
+    pa = UPI ID
+    pn = Payee name
+    tr = Transaction reference
+    tn = Transaction note
+    am = Amount
+    cu = Currency
+    url = Transaction/reference URL
+  */
+
+  const transactionRef =
+    String(order?.id || "")
+      .replace(/[^a-zA-Z0-9]/g, "")
+      .slice(0, 35) ||
+    `FLK${Date.now()}`;
+
+  const advanceAmount = Number(order?.advance || 0).toFixed(2);
+
+  const transactionNote =
+    `Flikart Order ${transactionRef}`.slice(0, 50);
 
   const upiLink =
     `upi://pay?pa=${encodeURIComponent(UPI_ID)}` +
     `&pn=${encodeURIComponent(STORE_NAME)}` +
-    `&am=${Number(order.advance).toFixed(2)}` +
+    `&tr=${encodeURIComponent(transactionRef)}` +
+    `&tn=${encodeURIComponent(transactionNote)}` +
+    `&am=${encodeURIComponent(advanceAmount)}` +
     `&cu=INR` +
-    `&tn=${encodeURIComponent(
-      `Flikart Order ${order.id}`
+    `&url=${encodeURIComponent(
+      `https://www.rcpay9.online`
     )}`;
 
   return (
     <main className="page center-page">
       <div className="payment-card">
-        <div className="payment-icon">
-          💳
-        </div>
+        <div className="payment-icon">💳</div>
 
         <h2>Complete Payment</h2>
 
@@ -604,7 +610,8 @@ function Payment({ order, setPage }) {
         </a>
 
         <div className="pending-status">
-          <span /> Waiting for payment verification...
+          <span />
+          Waiting for payment verification...
         </div>
 
         <small>
@@ -774,8 +781,11 @@ function Footer() {
 
 function App() {
   const [page, setPage] = useState("home");
+
   const [search, setSearch] = useState("");
+
   const [cart, setCart] = useState([]);
+
   const [order, setOrder] = useState(null);
 
   function addToCart(product) {
