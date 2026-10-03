@@ -6,70 +6,55 @@ import "./styles.css";
 const UPI_ID = "bharatsingh6688@axl";
 const STORE_NAME = "Flikart";
 
-/* =========================
-   SALE TIMER
-========================= */
-
 function SaleTimer() {
   const [seconds, setSeconds] = useState(600);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setSeconds((current) =>
-        current <= 0 ? 600 : current - 1
-      );
+      setSeconds((s) => (s <= 0 ? 600 : s - 1));
     }, 1000);
 
     return () => clearInterval(timer);
   }, []);
 
-  const minutes = String(
-    Math.floor(seconds / 60)
-  ).padStart(2, "0");
-
-  const secs = String(seconds % 60).padStart(2, "0");
-
   return (
     <div className="sale-timer">
       <span>Live Sale :</span>
       <b>
-        {minutes}min {secs}sec
+        {String(Math.floor(seconds / 60)).padStart(2, "0")}min{" "}
+        {String(seconds % 60).padStart(2, "0")}sec
       </b>
     </div>
   );
 }
 
-/* =========================
-   HEADER
-========================= */
-
-function Header({
-  search,
-  setSearch,
-  setPage,
-  cartCount,
-}) {
+function Header({ search, setSearch, setPage, cartCount }) {
   return (
     <>
       <header className="mobile-header">
-        <div className="brand-tabs">
+        <div className="mobile-top">
           <button
-            className="brand-tab active"
+            className="mobile-logo"
             onClick={() => setPage("home")}
           >
-            <span className="brand-mark">F</span>
-            <strong>Flikart</strong>
+            <span className="logo-icon">F</span>
+            Flikart
+          </button>
+
+          <button
+            className="mobile-cart"
+            onClick={() => setPage("cart")}
+          >
+            🛒
+            {cartCount > 0 && <i>{cartCount}</i>}
           </button>
         </div>
 
         <div className="search-box">
           <span>⌕</span>
-
           <input
             value={search}
-            onChange={(e) =>
-              setSearch(e.target.value)
-            }
+            onChange={(e) => setSearch(e.target.value)}
             placeholder="Search for Product"
           />
         </div>
@@ -80,17 +65,15 @@ function Header({
           className="desktop-logo"
           onClick={() => setPage("home")}
         >
+          <span className="logo-icon">F</span>
           Flikart
         </button>
 
         <div className="desktop-search">
           <span>⌕</span>
-
           <input
             value={search}
-            onChange={(e) =>
-              setSearch(e.target.value)
-            }
+            onChange={(e) => setSearch(e.target.value)}
             placeholder="Search for Products, Brands and More"
           />
         </div>
@@ -99,19 +82,12 @@ function Header({
           className="desktop-cart"
           onClick={() => setPage("cart")}
         >
-          🛒 Cart
-          {cartCount > 0
-            ? ` (${cartCount})`
-            : ""}
+          🛒 Cart {cartCount > 0 ? `(${cartCount})` : ""}
         </button>
       </header>
     </>
   );
 }
-
-/* =========================
-   CATEGORIES
-========================= */
 
 function Categories({ setPage }) {
   const categories = [
@@ -124,73 +100,50 @@ function Categories({ setPage }) {
   ];
 
   return (
-    <nav className="categories">
-      {categories.map(
-        ([icon, label], index) => (
-          <button
-            key={label}
-            className={`category ${
-              index === 0 ? "active" : ""
-            }`}
-            onClick={() => setPage("shop")}
-          >
-            <span>{icon}</span>
-            <b>{label}</b>
-          </button>
-        )
-      )}
-    </nav>
+    <div className="categories">
+      {categories.map(([icon, name], i) => (
+        <button
+          key={name}
+          className={`category ${i === 0 ? "active" : ""}`}
+          onClick={() => setPage("shop")}
+        >
+          <span>{icon}</span>
+          <b>{name}</b>
+        </button>
+      ))}
+    </div>
   );
 }
-
-/* =========================
-   SALE BANNER
-========================= */
 
 function SaleBanner() {
   return (
     <section className="sale-banner">
-      <img
-        src="/hero.png"
-        alt="Flikart Mega Sale"
-      />
-
-      <div className="banner-fallback">
-        <small>MEGA FASHION SALE</small>
-        <strong>SALE IS LIVE</strong>
-        <span>
-          Premium men's fashion deals
-        </span>
-      </div>
+      <img src="/hero.png" alt="Flikart Mega Sale" />
     </section>
   );
 }
 
-/* =========================
-   PRODUCT CARD
-========================= */
-
-function ProductCard({
-  product,
-  addToCart,
-  buyNow,
-}) {
-  const discount = Math.max(
-    0,
-    Math.round(
-      ((product.mrp - product.price) /
-        product.mrp) *
-        100
-    )
+function ProductCard({ product, openProduct }) {
+  const discount = Math.round(
+    ((product.mrp - product.price) / product.mrp) * 100
   );
 
-  const ratings =
-    3200 + product.id * 827;
+  const ratings = 2500 + product.id * 713;
 
   return (
-    <article className="product-card">
-      <div className="product-image">
+    <article
+      className="product-card"
+      onClick={() => openProduct(product)}
+    >
+      <div className="product-image-wrap">
+        {product.badge && (
+          <span className="product-badge">
+            {product.badge}
+          </span>
+        )}
+
         <img
+          className="product-image"
           src={product.image}
           alt={product.name}
           loading="lazy"
@@ -198,9 +151,7 @@ function ProductCard({
       </div>
 
       <div className="product-info">
-        <h3 title={product.name}>
-          {product.name}
-        </h3>
+        <h3>{product.name}</h3>
 
         <p className="product-short">
           {product.short}
@@ -208,86 +159,139 @@ function ProductCard({
 
         <div className="discount-row">
           <span>{discount}% Off</span>
-          <del>
-            ₹{product.mrp}.00
-          </del>
+          <del>₹{product.mrp}</del>
         </div>
 
         <div className="price-row">
-          <strong>
-            ₹{product.price}.00
-          </strong>
-
-          <span className="assured">
-            ✓ Assured
-          </span>
+          <strong>₹{product.price}</strong>
+          <span className="assured">✓ Assured</span>
         </div>
 
         <div className="rating-row">
-          <span className="rating">
-            4.5 ★
-          </span>
-
-          <span>
-            {ratings} Ratings
-          </span>
+          <span className="rating">4.5 ★</span>
+          <span>{ratings} Ratings</span>
         </div>
 
         <p className="delivery">
           Free Delivery in Two Days
         </p>
 
-        <div className="product-actions">
-          <button
-            className="add-btn"
-            onClick={() =>
-              addToCart(product)
-            }
-          >
-            ADD TO CART
-          </button>
-
-          <button
-            className="buy-btn"
-            onClick={() =>
-              buyNow(product)
-            }
-          >
-            BUY NOW
-          </button>
+        <div className="tap-hint">
+          Tap to view product
         </div>
       </div>
     </article>
   );
 }
 
-/* =========================
-   HOME
-========================= */
-
-function Home({
-  search,
+function ProductDetails({
+  product,
   setPage,
   addToCart,
   buyNow,
 }) {
+  if (!product) {
+    setPage("home");
+    return null;
+  }
+
+  const discount = Math.round(
+    ((product.mrp - product.price) / product.mrp) * 100
+  );
+
+  return (
+    <main className="details-page">
+      <button
+        className="back-button"
+        onClick={() => setPage("home")}
+      >
+        ← Back
+      </button>
+
+      <div className="details-card">
+        <div className="details-image-box">
+          {product.badge && (
+            <span className="details-badge">
+              {product.badge}
+            </span>
+          )}
+
+          <img
+            src={product.image}
+            alt={product.name}
+          />
+        </div>
+
+        <div className="details-info">
+          <h1>{product.name}</h1>
+
+          <p className="details-short">
+            {product.short}
+          </p>
+
+          <div className="details-rating">
+            <span>4.5 ★</span>
+            <b>Trusted Product</b>
+          </div>
+
+          <div className="details-price">
+            <strong>₹{product.price}</strong>
+            <del>₹{product.mrp}</del>
+            <em>{discount}% OFF</em>
+          </div>
+
+          <div className="offer-box">
+            <b>Special Flikart Offer</b>
+            <span>
+              Limited-time premium fashion deal
+            </span>
+          </div>
+
+          <div className="details-delivery">
+            🚚 Free Delivery in Two Days
+          </div>
+
+          <div className="details-buttons">
+            <button
+              className="detail-cart"
+              onClick={() => addToCart(product)}
+            >
+              ADD TO CART
+            </button>
+
+            <button
+              className="detail-buy"
+              onClick={() => buyNow(product)}
+            >
+              BUY NOW
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+}
+
+function Home({
+  search,
+  setPage,
+  openProduct,
+}) {
   const filtered = useMemo(() => {
-    const query =
-      search.trim().toLowerCase();
+    const q = search.trim().toLowerCase();
 
-    if (!query) return products;
+    if (!q) return products;
 
-    return products.filter((product) =>
-      `${product.name} ${product.short}`
+    return products.filter((p) =>
+      `${p.name} ${p.short}`
         .toLowerCase()
-        .includes(query)
+        .includes(q)
     );
   }, [search]);
 
   return (
     <main>
       <Categories setPage={setPage} />
-
       <SaleBanner />
 
       <section className="live-sale">
@@ -303,79 +307,44 @@ function Home({
         <div className="section-heading">
           <div>
             <h2>Best Deals For You</h2>
-            <p>
-              Special offers from Flikart
-            </p>
+            <p>Tap any product to view details</p>
           </div>
 
-          <button
-            onClick={() =>
-              setPage("shop")
-            }
-          >
+          <button onClick={() => setPage("shop")}>
             View All
           </button>
         </div>
 
         <div className="product-grid">
-          {filtered.length ? (
-            filtered.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                addToCart={addToCart}
-                buyNow={buyNow}
-              />
-            ))
-          ) : (
-            <div className="no-results">
-              <h3>
-                No products found
-              </h3>
-
-              <p>
-                Try another search.
-              </p>
-            </div>
-          )}
+          {filtered.map((product) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              openProduct={openProduct}
+            />
+          ))}
         </div>
       </section>
     </main>
   );
 }
 
-/* =========================
-   SHOP
-========================= */
-
-function Shop({
-  search,
-  addToCart,
-  buyNow,
-}) {
-  const filtered =
-    products.filter((product) =>
-      `${product.name} ${product.short}`
-        .toLowerCase()
-        .includes(
-          search.toLowerCase()
-        )
-    );
+function Shop({ search, openProduct }) {
+  const filtered = products.filter((p) =>
+    `${p.name} ${p.short}`
+      .toLowerCase()
+      .includes(search.toLowerCase())
+  );
 
   return (
     <main className="page">
       <div className="page-heading">
         <div>
           <h2>All Products</h2>
-          <p>
-            Shop premium products
-            from Flikart
-          </p>
+          <p>Premium collection</p>
         </div>
 
-        <span>
-          {filtered.length} items
-        </span>
+        <span>{filtered.length} items</span>
       </div>
 
       <div className="product-grid">
@@ -383,18 +352,13 @@ function Shop({
           <ProductCard
             key={product.id}
             product={product}
-            addToCart={addToCart}
-            buyNow={buyNow}
+            openProduct={openProduct}
           />
         ))}
       </div>
     </main>
   );
 }
-
-/* =========================
-   CART
-========================= */
 
 function Cart({
   cart,
@@ -403,10 +367,7 @@ function Cart({
   removeItem,
 }) {
   const total = cart.reduce(
-    (sum, product) =>
-      sum +
-      product.price *
-        product.qty,
+    (sum, p) => sum + p.price * p.qty,
     0
   );
 
@@ -417,16 +378,9 @@ function Cart({
       {!cart.length ? (
         <div className="empty-box">
           <div>🛒</div>
+          <h3>Your cart is empty</h3>
 
-          <h3>
-            Your cart is empty
-          </h3>
-
-          <button
-            onClick={() =>
-              setPage("home")
-            }
-          >
+          <button onClick={() => setPage("home")}>
             Continue Shopping
           </button>
         </div>
@@ -434,50 +388,28 @@ function Cart({
         <>
           <div className="cart-list">
             {cart.map((item) => (
-              <div
-                className="cart-item"
-                key={item.id}
-              >
-                <img
-                  src={item.image}
-                  alt={item.name}
-                />
+              <div className="cart-item" key={item.id}>
+                <img src={item.image} alt={item.name} />
 
                 <div className="cart-item-info">
-                  <h3>
-                    {item.name}
-                  </h3>
-
-                  <p>
-                    {item.short}
-                  </p>
-
-                  <strong>
-                    ₹{item.price}
-                  </strong>
+                  <h3>{item.name}</h3>
+                  <p>{item.short}</p>
+                  <strong>₹{item.price}</strong>
 
                   <div className="quantity">
                     <button
                       onClick={() =>
-                        updateQty(
-                          item.id,
-                          -1
-                        )
+                        updateQty(item.id, -1)
                       }
                     >
                       −
                     </button>
 
-                    <span>
-                      {item.qty}
-                    </span>
+                    <span>{item.qty}</span>
 
                     <button
                       onClick={() =>
-                        updateQty(
-                          item.id,
-                          1
-                        )
+                        updateQty(item.id, 1)
                       }
                     >
                       +
@@ -487,9 +419,7 @@ function Cart({
                   <button
                     className="remove-btn"
                     onClick={() =>
-                      removeItem(
-                        item.id
-                      )
+                      removeItem(item.id)
                     }
                   >
                     Remove
@@ -500,20 +430,13 @@ function Cart({
           </div>
 
           <div className="cart-total">
-            <span>
-              Total Amount
-            </span>
-
-            <strong>
-              ₹{total}
-            </strong>
+            <span>Total Amount</span>
+            <strong>₹{total}</strong>
           </div>
 
           <button
             className="full-action"
-            onClick={() =>
-              setPage("checkout")
-            }
+            onClick={() => setPage("checkout")}
           >
             PLACE ORDER
           </button>
@@ -523,38 +446,29 @@ function Cart({
   );
 }
 
-/* =========================
-   CHECKOUT
-========================= */
-
 function Checkout({
   cart,
   setPage,
   setOrder,
 }) {
   const total = cart.reduce(
-    (sum, product) =>
-      sum +
-      product.price *
-        product.qty,
+    (sum, p) => sum + p.price * p.qty,
     0
   );
 
   const first = cart[0];
 
-  const [form, setForm] =
-    useState({
-      name: "",
-      phone: "",
-      address: "",
-      pincode: "",
-    });
+  const [form, setForm] = useState({
+    name: "",
+    phone: "",
+    address: "",
+    pincode: "",
+  });
 
-  const [loading, setLoading] =
-    useState(false);
+  const [loading, setLoading] = useState(false);
 
-  async function submit(event) {
-    event.preventDefault();
+  async function submit(e) {
+    e.preventDefault();
 
     if (
       !form.name ||
@@ -562,83 +476,52 @@ function Checkout({
       !form.address ||
       !form.pincode
     ) {
-      alert(
-        "Please fill all details."
-      );
+      alert("Please fill all details.");
       return;
     }
 
     setLoading(true);
 
     try {
-      const response =
-        await fetch(
-          "/api/create-order",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type":
-                "application/json",
-            },
-            body: JSON.stringify({
-              customer_name:
-                form.name,
+      const response = await fetch(
+        "/api/create-order",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            customer_name: form.name,
+            phone: form.phone,
+            address: `${form.address}, ${form.pincode}`,
+            product_name: first.name,
+            quantity: cart.reduce(
+              (s, p) => s + p.qty,
+              0
+            ),
+            total_amount: total,
+            advance_amount: first.advance,
+            cod_amount: first.cod,
+            payment_method: "UPI",
+            payment_status: "Pending",
+            order_status: "Pending",
+          }),
+        }
+      );
 
-              phone:
-                form.phone,
-
-              address:
-                `${form.address}, ${form.pincode}`,
-
-              product_name:
-                first.name,
-
-              quantity:
-                cart.reduce(
-                  (sum, product) =>
-                    sum +
-                    product.qty,
-                  0
-                ),
-
-              total_amount:
-                total,
-
-              advance_amount:
-                first.advance,
-
-              cod_amount:
-                first.cod,
-
-              payment_method:
-                "UPI",
-
-              payment_status:
-                "Pending",
-
-              order_status:
-                "Pending",
-            }),
-          }
-        );
-
-      const data =
-        await response.json();
+      const data = await response.json();
 
       if (!response.ok) {
         throw new Error(
-          data.error ||
-            "Order failed"
+          data.error || "Order failed"
         );
       }
 
       setOrder({
         id: data.id,
         total,
-        advance:
-          first.advance,
-        customer:
-          form.name,
+        advance: first.advance,
+        customer: form.name,
       });
 
       setPage("payment");
@@ -652,9 +535,7 @@ function Checkout({
   return (
     <main className="page checkout-page">
       <div className="form-card">
-        <h2>
-          Enter Delivery Details
-        </h2>
+        <h2>Enter Delivery Details</h2>
 
         <form onSubmit={submit}>
           <input
@@ -686,8 +567,7 @@ function Checkout({
             onChange={(e) =>
               setForm({
                 ...form,
-                address:
-                  e.target.value,
+                address: e.target.value,
               })
             }
           />
@@ -699,18 +579,14 @@ function Checkout({
             onChange={(e) =>
               setForm({
                 ...form,
-                pincode:
-                  e.target.value,
+                pincode: e.target.value,
               })
             }
           />
 
           <div className="checkout-total">
             <span>Total</span>
-
-            <strong>
-              ₹{total}
-            </strong>
+            <strong>₹{total}</strong>
           </div>
 
           <button
@@ -727,75 +603,45 @@ function Checkout({
   );
 }
 
-/* =========================
-   PAYMENT
-========================= */
-
-function Payment({
-  order,
-  setPage,
-}) {
-  const [confirmed, setConfirmed] =
-    useState(false);
+function Payment({ order, setPage }) {
+  const [confirmed, setConfirmed] = useState(false);
 
   useEffect(() => {
     if (!order?.id) return;
 
-    const interval =
-      setInterval(async () => {
-        try {
-          const response =
-            await fetch(
-              `/api/order-status?id=${order.id}`
-            );
+    const interval = setInterval(async () => {
+      try {
+        const response = await fetch(
+          `/api/order-status?id=${order.id}`
+        );
 
-          const data =
-            await response.json();
+        const data = await response.json();
 
-          if (
-            data.payment_status ===
-              "Confirmed" ||
-            data.order_status ===
-              "Confirmed"
-          ) {
-            setConfirmed(true);
-            clearInterval(
-              interval
-            );
-          }
-        } catch {}
-      }, 4000);
+        if (
+          data.payment_status === "Confirmed" ||
+          data.order_status === "Confirmed"
+        ) {
+          setConfirmed(true);
+          clearInterval(interval);
+        }
+      } catch {}
+    }, 4000);
 
-    return () =>
-      clearInterval(interval);
+    return () => clearInterval(interval);
   }, [order]);
 
   if (confirmed) {
     return (
       <main className="page center-page">
         <div className="success-card">
-          <div className="success-icon">
-            ✓
-          </div>
-
-          <h1>
-            Order Confirmed!
-          </h1>
-
-          <p>
-            Your payment has been
-            verified.
-          </p>
-
-          <small>
-            Order ID: {order.id}
-          </small>
+          <div className="success-icon">✓</div>
+          <h1>Order Confirmed!</h1>
+          <p>Your payment has been verified.</p>
+          <small>Order ID: {order.id}</small>
 
           <button
             className="full-action"
-            onClick={() =>
-              setPage("track")
-            }
+            onClick={() => setPage("track")}
           >
             TRACK ORDER
           </button>
@@ -805,31 +651,20 @@ function Payment({
   }
 
   const upiLink =
-    `upi://pay?pa=${encodeURIComponent(
-      UPI_ID
-    )}` +
-    `&pn=${encodeURIComponent(
-      STORE_NAME
-    )}` +
-    `&am=${encodeURIComponent(
-      order.advance
-    )}` +
+    `upi://pay?pa=${encodeURIComponent(UPI_ID)}` +
+    `&pn=${encodeURIComponent(STORE_NAME)}` +
+    `&am=${encodeURIComponent(order.advance)}` +
     `&cu=INR`;
 
   return (
     <main className="page center-page">
       <div className="payment-card">
-        <div className="payment-icon">
-          💳
-        </div>
+        <div className="payment-icon">💳</div>
 
-        <h2>
-          Complete Payment
-        </h2>
+        <h2>Complete Payment</h2>
 
         <p>
-          Pay the advance amount
-          to confirm your order.
+          Pay the advance amount to confirm your order.
         </p>
 
         <div className="payment-amount">
@@ -837,69 +672,42 @@ function Payment({
         </div>
 
         <div className="upi-box">
-          <span>
-            UPI ID
-          </span>
-
-          <strong>
-            {UPI_ID}
-          </strong>
+          <span>UPI ID</span>
+          <strong>{UPI_ID}</strong>
         </div>
 
-        <a
-          className="pay-button"
-          href={upiLink}
-        >
+        <a className="pay-button" href={upiLink}>
           PAY ₹{order.advance} USING UPI
         </a>
 
         <div className="pending-status">
           <span />
-          Waiting for payment
-          verification...
+          Waiting for payment verification...
         </div>
-
-        <small>
-          Your order remains
-          pending until the
-          payment is verified.
-        </small>
       </div>
     </main>
   );
 }
 
-/* =========================
-   TRACK ORDER
-========================= */
-
 function Track() {
-  const [id, setId] =
-    useState("");
+  const [id, setId] = useState("");
+  const [order, setOrder] = useState(null);
 
-  const [order, setOrder] =
-    useState(null);
-
-  async function track(event) {
-    event.preventDefault();
+  async function track(e) {
+    e.preventDefault();
 
     if (!id.trim()) return;
 
     try {
-      const response =
-        await fetch(
-          `/api/order-status?id=${encodeURIComponent(
-            id
-          )}`
-        );
+      const response = await fetch(
+        `/api/order-status?id=${encodeURIComponent(id)}`
+      );
 
-      const data =
-        await response.json();
+      const data = await response.json();
 
       if (!response.ok) {
         throw new Error(
-          data.error ||
-            "Order not found"
+          data.error || "Order not found"
         );
       }
 
@@ -912,21 +720,14 @@ function Track() {
   return (
     <main className="page center-page">
       <div className="form-card track-card">
-        <h2>
-          Track Your Order
-        </h2>
-
-        <p>
-          Enter your Order ID below.
-        </p>
+        <h2>Track Your Order</h2>
+        <p>Enter your Order ID below.</p>
 
         <form onSubmit={track}>
           <input
             placeholder="Order ID"
             value={id}
-            onChange={(e) =>
-              setId(e.target.value)
-            }
+            onChange={(e) => setId(e.target.value)}
           />
 
           <button className="full-action">
@@ -937,15 +738,12 @@ function Track() {
         {order && (
           <div className="track-result">
             <p>
-              <b>Order ID:</b>{" "}
-              {order.id}
+              <b>Order ID:</b> {order.id}
             </p>
-
             <p>
               <b>Payment:</b>{" "}
               {order.payment_status}
             </p>
-
             <p>
               <b>Order:</b>{" "}
               {order.order_status}
@@ -957,10 +755,6 @@ function Track() {
   );
 }
 
-/* =========================
-   BOTTOM NAV
-========================= */
-
 function BottomNav({
   page,
   setPage,
@@ -969,62 +763,36 @@ function BottomNav({
   return (
     <nav className="bottom-nav">
       <button
-        className={
-          page === "home"
-            ? "selected"
-            : ""
-        }
-        onClick={() =>
-          setPage("home")
-        }
+        className={page === "home" ? "selected" : ""}
+        onClick={() => setPage("home")}
       >
         <span>⌂</span>
         Home
       </button>
 
       <button
-        className={
-          page === "shop"
-            ? "selected"
-            : ""
-        }
-        onClick={() =>
-          setPage("shop")
-        }
+        className={page === "shop" ? "selected" : ""}
+        onClick={() => setPage("shop")}
       >
         <span>▦</span>
         Categories
       </button>
 
       <button
-        className={
-          page === "track"
-            ? "selected"
-            : ""
-        }
-        onClick={() =>
-          setPage("track")
-        }
+        className={page === "track" ? "selected" : ""}
+        onClick={() => setPage("track")}
       >
         <span>📦</span>
         Orders
       </button>
 
       <button
-        className={
-          page === "cart"
-            ? "selected"
-            : ""
-        }
-        onClick={() =>
-          setPage("cart")
-        }
+        className={page === "cart" ? "selected" : ""}
+        onClick={() => setPage("cart")}
       >
         <span className="cart-icon">
           🛒
-          {cartCount > 0 && (
-            <i>{cartCount}</i>
-          )}
+          {cartCount > 0 && <i>{cartCount}</i>}
         </span>
         Cart
       </button>
@@ -1032,156 +800,101 @@ function BottomNav({
   );
 }
 
-/* =========================
-   FOOTER
-========================= */
-
 function Footer() {
   return (
     <footer className="footer">
       <div>
         <h3>Flikart</h3>
-
         <p>
-          Premium fashion deals
-          at special prices.
+          Premium fashion deals at special prices.
         </p>
       </div>
 
       <div>
-        <b>
-          Customer Support
-        </b>
-
-        <span>
-          Track Order
-        </span>
-
-        <span>
-          Payment Help
-        </span>
-
-        <span>
-          Contact Us
-        </span>
+        <b>Customer Support</b>
+        <span>Track Order</span>
+        <span>Payment Help</span>
+        <span>Contact Us</span>
       </div>
 
       <div>
         <b>Shopping</b>
-
-        <span>
-          Fashion
-        </span>
-
-        <span>
-          Accessories
-        </span>
-
-        <span>
-          Best Deals
-        </span>
+        <span>Fashion</span>
+        <span>Accessories</span>
+        <span>Best Deals</span>
       </div>
     </footer>
   );
 }
 
-/* =========================
-   APP
-========================= */
-
 function App() {
-  const [page, setPage] =
-    useState("home");
-
-  const [search, setSearch] =
-    useState("");
-
-  const [cart, setCart] =
-    useState([]);
-
-  const [order, setOrder] =
+  const [page, setPage] = useState("home");
+  const [search, setSearch] = useState("");
+  const [cart, setCart] = useState([]);
+  const [order, setOrder] = useState(null);
+  const [selectedProduct, setSelectedProduct] =
     useState(null);
+
+  function openProduct(product) {
+    setSelectedProduct(product);
+    setPage("details");
+    window.scrollTo(0, 0);
+  }
 
   function addToCart(product) {
     setCart((current) => {
-      const existing =
-        current.find(
-          (item) =>
-            item.id === product.id
-        );
+      const existing = current.find(
+        (p) => p.id === product.id
+      );
 
       if (existing) {
-        return current.map(
-          (item) =>
-            item.id === product.id
-              ? {
-                  ...item,
-                  qty:
-                    item.qty + 1,
-                }
-              : item
+        return current.map((p) =>
+          p.id === product.id
+            ? { ...p, qty: p.qty + 1 }
+            : p
         );
       }
 
       return [
         ...current,
-        {
-          ...product,
-          qty: 1,
-        },
+        { ...product, qty: 1 },
       ];
     });
+
+    alert("Product added to cart.");
   }
 
   function buyNow(product) {
     setCart([
-      {
-        ...product,
-        qty: 1,
-      },
+      { ...product, qty: 1 },
     ]);
 
     setPage("checkout");
+    window.scrollTo(0, 0);
   }
 
-  function updateQty(
-    id,
-    amount
-  ) {
+  function updateQty(id, amount) {
     setCart((current) =>
       current
-        .map((item) =>
-          item.id === id
-            ? {
-                ...item,
-                qty:
-                  item.qty +
-                  amount,
-              }
-            : item
+        .map((p) =>
+          p.id === id
+            ? { ...p, qty: p.qty + amount }
+            : p
         )
-        .filter(
-          (item) =>
-            item.qty > 0
-        )
+        .filter((p) => p.qty > 0)
     );
   }
 
   function removeItem(id) {
     setCart((current) =>
-      current.filter(
-        (item) =>
-          item.id !== id
-      )
+      current.filter((p) => p.id !== id)
     );
   }
 
-  const cartCount =
-    cart.reduce(
-      (sum, item) =>
-        sum + item.qty,
-      0
-    );
+  const cartCount = cart.reduce(
+    (sum, p) => sum + p.qty,
+    0
+  );
 
   return (
     <div className="app">
@@ -1196,14 +909,21 @@ function App() {
         <Home
           search={search}
           setPage={setPage}
-          addToCart={addToCart}
-          buyNow={buyNow}
+          openProduct={openProduct}
         />
       )}
 
       {page === "shop" && (
         <Shop
           search={search}
+          openProduct={openProduct}
+        />
+      )}
+
+      {page === "details" && (
+        <ProductDetails
+          product={selectedProduct}
+          setPage={setPage}
           addToCart={addToCart}
           buyNow={buyNow}
         />
@@ -1233,9 +953,7 @@ function App() {
         />
       )}
 
-      {page === "track" && (
-        <Track />
-      )}
+      {page === "track" && <Track />}
 
       <Footer />
 
