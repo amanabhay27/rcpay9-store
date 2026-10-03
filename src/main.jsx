@@ -1,16 +1,16 @@
-import React, {useState, useEffect} from "react";
-import {createRoot} from "react-dom/client";
-import {products} from "./products";
+import React, { useState, useEffect } from "react";
+import { createRoot } from "react-dom/client";
+import { products } from "./products";
 import "./styles.css";
 
-const money = n => `₹${n.toLocaleString("en-IN")}`;
+const money = (n) => `₹${Number(n).toLocaleString("en-IN")}`;
 
 function OfferTimer() {
   const [seconds, setSeconds] = useState(600);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setSeconds(prev => prev <= 1 ? 600 : prev - 1);
+      setSeconds((prev) => (prev <= 1 ? 600 : prev - 1));
     }, 1000);
 
     return () => clearInterval(timer);
@@ -21,8 +21,13 @@ function OfferTimer() {
 
   return (
     <div className="offerTimer">
-      <div className="offerTimerTitle">🔥 NAVRATRI SPECIAL OFFER</div>
-      <div className="offerTimerText">Limited-Time Fashion Offers</div>
+      <div className="offerTimerTitle">
+        🔥 NAVRATRI SPECIAL OFFER
+      </div>
+
+      <div className="offerTimerText">
+        Limited-Time Fashion Offers
+      </div>
 
       <div className="offerTimerClock">
         {String(minutes).padStart(2, "0")}:
@@ -36,10 +41,9 @@ function OfferTimer() {
   );
 }
 
-function Header({cartCount, setPage}) {
+function Header({ cartCount, setPage }) {
   return (
     <header className="header">
-
       <button className="logo" onClick={() => setPage("home")}>
         <span>StyleHu</span>
         <b>Zone</b>
@@ -56,7 +60,6 @@ function Header({cartCount, setPage}) {
       <button className="cartIcon" onClick={() => setPage("cart")}>
         🛒 <i>{cartCount}</i>
       </button>
-
     </header>
   );
 }
@@ -66,25 +69,21 @@ function SaleBanner() {
     <section className="saleBanner">
       <div>
         <strong>🔥 MEGA SALE — NAVRATRI SPECIAL 🔥</strong>
-        <span>
-          Limited-Time Fashion Offers • Premium Men's Collection
-        </span>
+        <span>Limited-Time Fashion Offers</span>
       </div>
     </section>
   );
 }
 
-function ProductCard({p, add, buy}) {
+function ProductCard({ p, add, buy }) {
   return (
     <article className="card">
-
       <div className="pic">
         <img src={p.image} alt={p.name} />
         <span>{p.badge}</span>
       </div>
 
       <div className="cardBody">
-
         <h3>{p.name}</h3>
 
         <p>{p.short}</p>
@@ -95,7 +94,7 @@ function ProductCard({p, add, buy}) {
         </div>
 
         <div className="payline">
-          <b>Pay Advance: {money(p.advance)}</b>
+          <b>Advance: {money(p.advance)}</b>
           <span>COD: {money(p.cod)}</span>
         </div>
 
@@ -108,14 +107,12 @@ function ProductCard({p, add, buy}) {
             Buy Now
           </button>
         </div>
-
       </div>
-
     </article>
   );
 }
 
-function Home({add, buy, setPage}) {
+function Home({ add, buy, setPage }) {
   return (
     <>
       <SaleBanner />
@@ -123,11 +120,6 @@ function Home({add, buy, setPage}) {
       <OfferTimer />
 
       <section className="hero">
-
-        {/* IMPORTANT:
-            hero.png is inside public folder,
-            so we use /hero.png directly.
-        */}
         <img
           src="/hero.png"
           alt="StyleHu Zone Navratri Mega Sale"
@@ -156,7 +148,6 @@ function Home({add, buy, setPage}) {
         </div>
 
         <div className="trust">
-
           <div>
             ✓ <b>Premium Quality</b>
             <small>Trusted products</small>
@@ -176,13 +167,10 @@ function Home({add, buy, setPage}) {
             ✓ <b>Easy Returns</b>
             <small>7-day policy</small>
           </div>
-
         </div>
-
       </section>
 
       <section className="strip">
-
         <div>
           🔥
           <b>NAVRATRI OFFERS</b>
@@ -192,7 +180,7 @@ function Home({add, buy, setPage}) {
         <div>
           🔒
           <b>SECURE CHECKOUT</b>
-          <small>Protected order flow</small>
+          <small>Protected checkout</small>
         </div>
 
         <div>
@@ -206,13 +194,10 @@ function Home({add, buy, setPage}) {
           <b>SUPPORT</b>
           <small>We're here to help</small>
         </div>
-
       </section>
 
       <section className="section">
-
         <div className="sectionHead">
-
           <div>
             <h2>Featured Products</h2>
             <p>Six curated combos — choose your style.</p>
@@ -221,11 +206,10 @@ function Home({add, buy, setPage}) {
           <button onClick={() => setPage("shop")}>
             View All →
           </button>
-
         </div>
 
         <div className="grid">
-          {products.map(p => (
+          {products.map((p) => (
             <ProductCard
               key={p.id}
               p={p}
@@ -234,15 +218,12 @@ function Home({add, buy, setPage}) {
             />
           ))}
         </div>
-
       </section>
 
       <section className="why">
-
         <h2>Why Choose StyleHu Zone?</h2>
 
         <div className="whyGrid">
-
           <div>
             ★
             <b>Curated Combos</b>
@@ -266,21 +247,18 @@ function Home({add, buy, setPage}) {
             <b>Customer Support</b>
             <span>We're here to help</span>
           </div>
-
         </div>
-
       </section>
     </>
   );
 }
 
-function Shop({add, buy}) {
+function Shop({ add, buy }) {
   return (
     <>
       <OfferTimer />
 
       <section className="section shop">
-
         <div className="sectionHead">
           <div>
             <h1>Shop All Products</h1>
@@ -291,7 +269,7 @@ function Shop({add, buy}) {
         </div>
 
         <div className="grid">
-          {products.map(p => (
+          {products.map((p) => (
             <ProductCard
               key={p.id}
               p={p}
@@ -300,14 +278,17 @@ function Shop({add, buy}) {
             />
           ))}
         </div>
-
       </section>
     </>
   );
 }
 
-function Cart({cart, setPage, remove, changeQty}) {
-
+function Cart({
+  cart,
+  setPage,
+  remove,
+  changeQty,
+}) {
   const total = cart.reduce(
     (s, x) => s + x.price * x.qty,
     0
@@ -318,12 +299,14 @@ function Cart({cart, setPage, remove, changeQty}) {
     0
   );
 
-  const cod = total - advance;
+  const cod = cart.reduce(
+    (s, x) => s + x.cod * x.qty,
+    0
+  );
 
   if (!cart.length) {
     return (
       <section className="empty">
-
         <h1>Your cart is empty</h1>
 
         <p>Add a combo to get started.</p>
@@ -331,27 +314,21 @@ function Cart({cart, setPage, remove, changeQty}) {
         <button onClick={() => setPage("shop")}>
           Shop Products
         </button>
-
       </section>
     );
   }
 
   return (
     <section className="section">
-
       <h1>Your Cart</h1>
 
       <div className="cartLayout">
-
         <div>
-
-          {cart.map(x => (
+          {cart.map((x) => (
             <div className="cartItem" key={x.id}>
-
               <img src={x.image} alt={x.name} />
 
               <div>
-
                 <h3>{x.name}</h3>
 
                 <p>
@@ -363,9 +340,10 @@ function Cart({cart, setPage, remove, changeQty}) {
                 </p>
 
                 <div className="qty">
-
                   <button
-                    onClick={() => changeQty(x.id, -1)}
+                    onClick={() =>
+                      changeQty(x.id, -1)
+                    }
                   >
                     -
                   </button>
@@ -373,7 +351,9 @@ function Cart({cart, setPage, remove, changeQty}) {
                   <b>{x.qty}</b>
 
                   <button
-                    onClick={() => changeQty(x.id, 1)}
+                    onClick={() =>
+                      changeQty(x.id, 1)
+                    }
                   >
                     +
                   </button>
@@ -384,18 +364,13 @@ function Cart({cart, setPage, remove, changeQty}) {
                   >
                     Remove
                   </button>
-
                 </div>
-
               </div>
-
             </div>
           ))}
-
         </div>
 
         <aside className="summary">
-
           <h2>Order Summary</h2>
 
           <p>
@@ -418,17 +393,13 @@ function Cart({cart, setPage, remove, changeQty}) {
           <button onClick={() => setPage("checkout")}>
             Proceed to Checkout
           </button>
-
         </aside>
-
       </div>
-
     </section>
   );
 }
 
-function Checkout({cart, placeOrder}) {
-
+function Checkout({ cart, placeOrder }) {
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -436,7 +407,7 @@ function Checkout({cart, placeOrder}) {
     address: "",
     city: "",
     state: "",
-    pincode: ""
+    pincode: "",
   });
 
   const [error, setError] = useState("");
@@ -451,85 +422,137 @@ function Checkout({cart, placeOrder}) {
     0
   );
 
-  const cod = total - advance;
+  const cod = cart.reduce(
+    (s, x) => s + x.cod * x.qty,
+    0
+  );
 
-  const submit = e => {
-
+  const submit = (e) => {
     e.preventDefault();
 
     if (
-      Object.values(form).some(
-        v => !v.trim()
-      )
+      !form.name.trim() ||
+      !form.phone.trim() ||
+      !form.address.trim() ||
+      !form.city.trim() ||
+      !form.state.trim() ||
+      !form.pincode.trim()
     ) {
-      return setError(
-        "Please fill all required fields."
-      );
+      setError("Please fill all required fields.");
+      return;
     }
 
     if (!/^\d{10}$/.test(form.phone)) {
-      return setError(
-        "Enter a valid 10-digit mobile number."
-      );
+      setError("Enter a valid 10-digit mobile number.");
+      return;
     }
 
     if (!/^\d{6}$/.test(form.pincode)) {
-      return setError(
-        "Enter a valid 6-digit pincode."
-      );
+      setError("Enter a valid 6-digit pincode.");
+      return;
     }
+
+    setError("");
 
     placeOrder(form, {
       total,
       advance,
       cod,
-      items: cart
+      items: cart,
     });
   };
 
   return (
     <section className="section">
-
       <h1>Checkout</h1>
 
       <div className="checkout">
-
         <form onSubmit={submit}>
-
           <h2>Shipping Details</h2>
 
-          {[
-            "name",
-            "phone",
-            "email",
-            "address",
-            "city",
-            "state",
-            "pincode"
-          ].map(k => (
+          <input
+            placeholder="Full Name"
+            value={form.name}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                name: e.target.value,
+              })
+            }
+            required
+          />
 
-            <input
-              key={k}
-              placeholder={
-                k === "name"
-                  ? "Full Name"
-                  : k === "phone"
-                  ? "Mobile Number"
-                  : k === "pincode"
-                  ? "Pincode"
-                  : k[0].toUpperCase() + k.slice(1)
-              }
-              value={form[k]}
-              onChange={e =>
-                setForm({
-                  ...form,
-                  [k]: e.target.value
-                })
-              }
-              required={k !== "email"}
-            />
+          <input
+            placeholder="Mobile Number"
+            value={form.phone}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                phone: e.target.value,
+              })
+            }
+            required
+          />
 
-          ))}
+          <input
+            type="email"
+            placeholder="Email (optional)"
+            value={form.email}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                email: e.target.value,
+              })
+            }
+          />
+
+          <input
+            placeholder="Full Address"
+            value={form.address}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                address: e.target.value,
+              })
+            }
+            required
+          />
+
+          <input
+            placeholder="City"
+            value={form.city}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                city: e.target.value,
+              })
+            }
+            required
+          />
+
+          <input
+            placeholder="State"
+            value={form.state}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                state: e.target.value,
+              })
+            }
+            required
+          />
+
+          <input
+            placeholder="Pincode"
+            value={form.pincode}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                pincode: e.target.value,
+              })
+            }
+            required
+          />
 
           {error && (
             <div className="error">
@@ -540,19 +563,15 @@ function Checkout({cart, placeOrder}) {
           <button type="submit">
             Place Order
           </button>
-
         </form>
 
         <aside className="summary">
-
           <h2>Order Summary</h2>
 
-          {cart.map(x => (
+          {cart.map((x) => (
             <p key={x.id}>
               {x.name} × {x.qty}
-              <b>
-                {money(x.price * x.qty)}
-              </b>
+              <b>{money(x.price * x.qty)}</b>
             </p>
           ))}
 
@@ -575,32 +594,25 @@ function Checkout({cart, placeOrder}) {
 
           <small>
             Payment gateway will be connected in the next phase.
-            This version records the order locally for testing.
           </small>
-
         </aside>
-
       </div>
-
     </section>
   );
 }
 
-function Success({order, setPage}) {
-
+function Success({ order, setPage }) {
   return (
     <section className="success">
-
       <div className="check">✓</div>
 
       <h1>Order Placed</h1>
 
       <p>
-        Your test order has been recorded successfully.
+        Your order has been recorded successfully.
       </p>
 
       <div className="orderBox">
-
         <span>
           Order ID
           <b>{order.id}</b>
@@ -615,11 +627,9 @@ function Success({order, setPage}) {
           COD
           <b>{money(order.cod)}</b>
         </span>
-
       </div>
 
       <div>
-
         <button onClick={() => setPage("track")}>
           Track Order
         </button>
@@ -630,57 +640,56 @@ function Success({order, setPage}) {
         >
           Continue Shopping
         </button>
-
       </div>
-
     </section>
   );
 }
 
 function Track() {
-
   const [id, setId] = useState("");
   const [found, setFound] = useState(null);
 
   const track = () => {
-
     const saved = localStorage.getItem(
       "stylehuzone_last_order"
     );
 
-    setFound(
-      saved ? JSON.parse(saved) : null
-    );
+    if (!saved) {
+      setFound(null);
+      return;
+    }
+
+    const order = JSON.parse(saved);
+
+    if (!id.trim() || id.trim() === order.id) {
+      setFound(order);
+    } else {
+      setFound(null);
+    }
   };
 
   return (
     <section className="track">
-
       <h1>Track Your Order</h1>
 
       <p>
-        Enter your Order ID. During testing,
-        the latest locally saved order can be retrieved.
+        Enter your Order ID to check the latest order status.
       </p>
 
       <div className="trackBox">
-
         <input
           value={id}
-          onChange={e => setId(e.target.value)}
+          onChange={(e) => setId(e.target.value)}
           placeholder="e.g. SHZ123456"
         />
 
         <button onClick={track}>
           Track
         </button>
-
       </div>
 
       {found && (
-
         <div className="timeline">
-
           <h2>{found.id}</h2>
 
           <div>
@@ -689,10 +698,8 @@ function Track() {
           </div>
 
           <div>
-            ● Advance Pending/Received
-            <small>
-              Payment gateway will be connected next
-            </small>
+            ● Advance
+            <small>Order is being processed</small>
           </div>
 
           <div>
@@ -704,20 +711,21 @@ function Track() {
             ○ Delivered
             <small>Pending</small>
           </div>
-
         </div>
-
       )}
 
+      {!found && id && (
+        <div className="error">
+          Order not found.
+        </div>
+      )}
     </section>
   );
 }
 
 function Footer() {
-
   return (
     <footer>
-
       <div className="footLogo">
         StyleHu
         <b>Zone</b>
@@ -747,171 +755,180 @@ function Footer() {
       <p>
         © 2026 StyleHu Zone. All rights reserved.
       </p>
-
     </footer>
   );
 }
 
 function App() {
-
   const [page, setPage] = useState("home");
   const [cart, setCart] = useState([]);
   const [order, setOrder] = useState(null);
 
-  const add = p => {
-
-    setCart(c => {
-
-      const old = c.find(
-        x => x.id === p.id
+  const add = (p) => {
+    setCart((current) => {
+      const existing = current.find(
+        (x) => x.id === p.id
       );
 
-      if (old) {
-        return c.map(
-          x =>
-            x.id === p.id
-              ? {...x, qty: x.qty + 1}
-              : x
+      if (existing) {
+        return current.map((x) =>
+          x.id === p.id
+            ? {
+                ...x,
+                qty: x.qty + 1,
+              }
+            : x
         );
       }
 
       return [
-        ...c,
+        ...current,
         {
           ...p,
-          qty: 1
-        }
+          qty: 1,
+        },
       ];
-
     });
-
   };
 
-  const buy = p => {
-    add(p);
+  const buy = (p) => {
+    setCart((current) => {
+      const existing = current.find(
+        (x) => x.id === p.id
+      );
+
+      if (existing) {
+        return current.map((x) =>
+          x.id === p.id
+            ? {
+                ...x,
+                qty: x.qty + 1,
+              }
+            : x
+        );
+      }
+
+      return [
+        ...current,
+        {
+          ...p,
+          qty: 1,
+        },
+      ];
+    });
+
     setPage("cart");
   };
 
-  const remove = id => {
-    setCart(
-      c => c.filter(
-        x => x.id !== id
+  const remove = (id) => {
+    setCart((current) =>
+      current.filter((x) => x.id !== id)
+    );
+  };
+
+  const changeQty = (id, difference) => {
+    setCart((current) =>
+      current.map((x) =>
+        x.id === id
+          ? {
+              ...x,
+              qty: Math.max(
+                1,
+                x.qty + difference
+              ),
+            }
+          : x
       )
     );
   };
 
-  const changeQty = (id, d) => {
-
-    setCart(
-      c =>
-        c.map(
-          x =>
-            x.id === id
-              ? {
-                  ...x,
-                  qty: Math.max(
-                    1,
-                    x.qty + d
-                  )
-                }
-              : x
-        )
-    );
-
-  };
-
   const placeOrder = (customer, summary) => {
-
-    const o = {
+    const newOrder = {
       id:
         "SHZ" +
         Math.floor(
           100000 +
-          Math.random() * 900000
+            Math.random() * 900000
         ),
 
+      customer,
       ...summary,
 
-      customer,
-
       createdAt:
-        new Date().toISOString()
+        new Date().toISOString(),
     };
 
     localStorage.setItem(
       "stylehuzone_last_order",
-      JSON.stringify(o)
+      JSON.stringify(newOrder)
     );
 
-    setOrder(o);
+    setOrder(newOrder);
     setCart([]);
     setPage("success");
-
   };
 
-  const content =
-    page === "home"
-      ? (
-        <Home
-          add={add}
-          buy={buy}
-          setPage={setPage}
-        />
-      )
+  let content;
 
-      : page === "shop"
-      ? (
-        <Shop
-          add={add}
-          buy={buy}
-        />
-      )
+  if (page === "home") {
+    content = (
+      <Home
+        add={add}
+        buy={buy}
+        setPage={setPage}
+      />
+    );
+  } else if (page === "shop") {
+    content = (
+      <Shop
+        add={add}
+        buy={buy}
+      />
+    );
+  } else if (page === "cart") {
+    content = (
+      <Cart
+        cart={cart}
+        setPage={setPage}
+        remove={remove}
+        changeQty={changeQty}
+      />
+    );
+  } else if (page === "checkout") {
+    content = (
+      <Checkout
+        cart={cart}
+        placeOrder={placeOrder}
+      />
+    );
+  } else if (page === "success") {
+    content = (
+      <Success
+        order={order}
+        setPage={setPage}
+      />
+    );
+  } else if (page === "track") {
+    content = <Track />;
+  } else {
+    content = (
+      <section className="contact">
+        <h1>Contact StyleHu Zone</h1>
 
-      : page === "cart"
-      ? (
-        <Cart
-          cart={cart}
-          setPage={setPage}
-          remove={remove}
-          changeQty={changeQty}
-        />
-      )
-
-      : page === "checkout"
-      ? (
-        <Checkout
-          cart={cart}
-          placeOrder={placeOrder}
-        />
-      )
-
-      : page === "success"
-      ? (
-        <Success
-          order={order}
-          setPage={setPage}
-        />
-      )
-
-      : page === "track"
-      ? <Track />
-
-      : (
-        <section className="contact">
-          <h1>Contact StyleHu Zone</h1>
-          <p>
-            For support, contact us at
-            {" "}
-            <b>support@rcpay9.online</b>.
-          </p>
-        </section>
-      );
+        <p>
+          For support, contact us at{" "}
+          <b>support@rcpay9.online</b>.
+        </p>
+      </section>
+    );
+  }
 
   return (
     <>
       <Header
         cartCount={cart.reduce(
-          (s, x) => s + x.qty,
+          (sum, item) =>
+            sum + item.qty,
           0
         )}
         setPage={setPage}
@@ -924,8 +941,11 @@ function App() {
   );
 }
 
-createRoot(
-  document.getElementById("root")
-).render(
-  <App />
-);
+const rootElement =
+  document.getElementById("root");
+
+if (rootElement) {
+  createRoot(rootElement).render(
+    <App />
+  );
+}
