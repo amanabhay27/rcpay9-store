@@ -369,6 +369,12 @@ function Checkout({ cart, setPage, setOrder }) {
       return;
     }
 
+    if (!first) {
+      alert("Your cart is empty.");
+      setPage("home");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -391,8 +397,6 @@ function Checkout({ cart, setPage, setOrder }) {
           advance_amount: first.advance,
           cod_amount: first.cod,
           payment_method: "UPI",
-          payment_status: "Pending",
-          order_status: "Pending",
         }),
       });
 
@@ -406,6 +410,12 @@ function Checkout({ cart, setPage, setOrder }) {
 
       const createdOrder = data.order || data;
 
+      if (!createdOrder?.id) {
+        throw new Error(
+          "Order was created but Order ID was not received."
+        );
+      }
+
       setOrder({
         id: createdOrder.id,
         total,
@@ -415,7 +425,10 @@ function Checkout({ cart, setPage, setOrder }) {
 
       setPage("payment");
     } catch (err) {
-      alert(err.message);
+      alert(
+        err?.message ||
+          "Unable to create order. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -493,7 +506,7 @@ function Checkout({ cart, setPage, setOrder }) {
 }
 
 function Payment({ order, setPage }) {
-  const [confirmed, setConfirmed] = useState(false);
+  const [paidClicked, setPaidClicked] = useState(false);
 
   useEffect(() => {
     if (!order?.id) return;
@@ -501,99 +514,79 @@ function Payment({ order, setPage }) {
     const interval = setInterval(async () => {
       try {
         const response = await fetch(
-          `/api/order-status?id=${encodeURIComponent(order.id)}`
+          `/api/order-status?id=${encodeURIComponent(
+            order.id
+          )}`
         );
 
         const data = await response.json();
 
         if (
           data.payment_status === "Confirmed" ||
-          data.order_status === "Confirmed"
+          data.order_status === "Confirmed" ||
+          data.order_status === "Shipped" ||
+          data.order_status === "Delivered"
         ) {
-          setConfirmed(true);
+          setPage("track");
           clearInterval(interval);
         }
       } catch {}
     }, 4000);
 
     return () => clearInterval(interval);
-  }, [order]);
+  }, [order, setPage]);
 
-  if (confirmed) {
+  if (!order?.id) {
     return (
       <main className="page center-page">
-        <div className="success-card">
-          <div className="success-icon">✓</div>
-
-          <h1>Order Confirmed!</h1>
+        <div className="form-card">
+          <h2>Payment Session Expired</h2>
 
           <p>
-            Your payment has been verified.
+            Please place the order again.
           </p>
-
-          <small>
-            Order ID: {order.id}
-          </small>
 
           <button
             className="full-action"
-            onClick={() => setPage("track")}
+            onClick={() => setPage("home")}
           >
-            TRACK ORDER
+            GO TO SHOP
           </button>
         </div>
       </main>
     );
   }
 
-  /*
-    FINAL UPI PAYMENT LINK
+  function markAsPaid() {
+    setPaidClicked(true);
 
-    NPCI UPI deep-link parameters:
-    pa = UPI ID
-    pn = Payee name
-    tr = Transaction reference
-    tn = Transaction note
-    am = Amount
-    cu = Currency
-    url = Transaction/reference URL
-  */
-
-  const transactionRef =
-    String(order?.id || "")
-      .replace(/[^a-zA-Z0-9]/g, "")
-      .slice(0, 35) ||
-    `FLK${Date.now()}`;
-
-  const advanceAmount = Number(order?.advance || 0).toFixed(2);
-
-  const transactionNote =
-    `Flikart Order ${transactionRef}`.slice(0, 50);
-
-  const upiLink =
-    `upi://pay?pa=${encodeURIComponent(UPI_ID)}` +
-    `&pn=${encodeURIComponent(STORE_NAME)}` +
-    `&tr=${encodeURIComponent(transactionRef)}` +
-    `&tn=${encodeURIComponent(transactionNote)}` +
-    `&am=${encodeURIComponent(advanceAmount)}` +
-    `&cu=INR` +
-    `&url=${encodeURIComponent(
-      `https://www.rcpay9.online`
-    )}`;
+    alert(
+      "Payment request received. Your order is pending until the payment is manually verified."
+    );
+  }
 
   return (
     <main className="page center-page">
       <div className="payment-card">
-        <div className="payment-icon">💳</div>
+        <div className="payment-icon">📱</div>
 
-        <h2>Complete Payment</h2>
+        <h2>Pay Advance</h2>
 
         <p>
-          Pay the advance amount to confirm your order.
+          Scan the QR code with PhonePe, Google Pay,
+          Paytm or any UPI app.
         </p>
 
         <div className="payment-amount">
-          ₹{order.advance}
+          ₹{Number(order.advance || 0).toFixed(0)}
+        </div>
+
+        <div className="qr-wrap">
+          <img
+            src="/payment-qr.png"
+            alt="Flikart UPI payment QR code"
+            className="payment-qr"
+          />
         </div>
 
         <div className="upi-box">
@@ -602,21 +595,53 @@ function Payment({ order, setPage }) {
           <strong>{UPI_ID}</strong>
         </div>
 
-        <a
+        <div className="payment-instructions">
+          <b>How to pay</b>
+
+          <ol>
+            <li>
+              Open any UPI app.
+            </li>
+
+            <li>
+              Scan the QR code above.
+            </li>
+
+            <li>
+              Pay exactly ₹
+              {Number(order.advance || 0).toFixed(0)}.
+            </li>
+
+            <li>
+              After successful payment, tap
+              “I Have Paid”.
+            </li>
+          </ol>
+        </div>
+
+        <button
           className="pay-button"
-          href={upiLink}
+          type="button"
+          onClick={markAsPaid}
         >
-          PAY ₹{order.advance} USING UPI
-        </a>
+          {paidClicked
+            ? "PAYMENT SUBMITTED ✓"
+            : "I HAVE PAID"}
+        </button>
 
         <div className="pending-status">
           <span />
-          Waiting for payment verification...
+
+          {paidClicked
+            ? "Payment submitted — waiting for verification..."
+            : "Waiting for payment verification..."}
         </div>
 
         <small>
-          Your order remains pending until the payment
-          is verified.
+          Order ID: {order.id}
+          <br />
+          Do not close this page until your payment
+          is complete.
         </small>
       </div>
     </main>
@@ -630,7 +655,10 @@ function Track() {
   async function track(e) {
     e.preventDefault();
 
-    if (!id.trim()) return;
+    if (!id.trim()) {
+      alert("Please enter Order ID.");
+      return;
+    }
 
     try {
       const response = await fetch(
@@ -647,7 +675,9 @@ function Track() {
 
       setOrder(data);
     } catch (err) {
-      alert(err.message);
+      alert(
+        err?.message || "Unable to find order."
+      );
     }
   }
 
@@ -656,7 +686,9 @@ function Track() {
       <div className="form-card track-card">
         <h2>Track Your Order</h2>
 
-        <p>Enter your Order ID below.</p>
+        <p>
+          Enter your Order ID below.
+        </p>
 
         <form onSubmit={track}>
           <input
@@ -703,7 +735,9 @@ function BottomNav({
     <nav className="bottom-nav">
       <button
         className={
-          page === "home" ? "selected" : ""
+          page === "home"
+            ? "selected"
+            : ""
         }
         onClick={() => setPage("home")}
       >
@@ -713,7 +747,9 @@ function BottomNav({
 
       <button
         className={
-          page === "shop" ? "selected" : ""
+          page === "shop"
+            ? "selected"
+            : ""
         }
         onClick={() => setPage("shop")}
       >
@@ -723,7 +759,9 @@ function BottomNav({
 
       <button
         className={
-          page === "track" ? "selected" : ""
+          page === "track"
+            ? "selected"
+            : ""
         }
         onClick={() => setPage("track")}
       >
@@ -733,7 +771,9 @@ function BottomNav({
 
       <button
         className={
-          page === "cart" ? "selected" : ""
+          page === "cart"
+            ? "selected"
+            : ""
         }
         onClick={() => setPage("cart")}
       >
@@ -743,6 +783,7 @@ function BottomNav({
             <i>{cartCount}</i>
           )}
         </span>
+
         Cart
       </button>
     </nav>
@@ -902,7 +943,9 @@ function App() {
         />
       )}
 
-      {page === "track" && <Track />}
+      {page === "track" && (
+        <Track />
+      )}
 
       <Footer />
 
