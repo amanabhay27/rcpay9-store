@@ -1,85 +1,109 @@
 export const products = [
   {
+    id: 7,
+    name: "iPhone 17 Pro Max 2TB",
+    short: "Premium smartphone deal",
+    image: "/product-7.jpg",
+    mrp: 229900,
+    price: 2199,
+    advance: 499,
+    cod: 1700,
+    badge: "MEGA SALE",
+  },
+
+  {
+    id: 8,
+    name: "Nothing Phone 2a",
+    short: "Premium smartphone deal",
+    image: "/product-8.jpg",
+    mrp: 24999,
+    price: 1299,
+    advance: 399,
+    cod: 900,
+    badge: "HOT DEAL",
+  },
+
+  {
+    id: 9,
+    name: "Premium Smartwatch",
+    short: "Smart fitness smartwatch",
+    image: "/product-9.jpg",
+    mrp: 2499,
+    price: 299,
+    advance: 149,
+    cod: 150,
+    badge: "88% OFF",
+  },
+
+  {
     id: 1,
     name: "Boys Best Combo",
     short: "2 Formal Pants + Premium Shoes + Watch",
+    image: "/product-1.jpg",
     mrp: 4199,
     price: 999,
     advance: 499,
     cod: 500,
     badge: "MEGA SALE",
-    image: "/product-1.jpg",
-    rating: 4.5,
-    ratings: 8107
   },
 
   {
     id: 2,
     name: "Boys Premium Accessories Combo",
     short: "Watch + Chasma + Bracelet + Locket + Purse",
+    image: "/product-2.jpg",
     mrp: 2599,
     price: 766,
     advance: 366,
     cod: 400,
     badge: "HOT DEAL",
-    image: "/product-2.jpg",
-    rating: 4.5,
-    ratings: 5471
   },
 
   {
     id: 3,
     name: "Formal Premium Combo",
     short: "2 Shirts + Pants + Shoes + Watch",
+    image: "/product-3.jpg",
     mrp: 3899,
     price: 999,
     advance: 499,
     cod: 500,
     badge: "BEST SELLER",
-    image: "/product-3.jpg",
-    rating: 4.5,
-    ratings: 5263
   },
 
   {
     id: 4,
     name: "Men's Premium Fashion Combo",
     short: "Shirt + Jeans/Pant + Belt + Wallet + Sunglasses",
+    image: "/product-4.jpg",
     mrp: 2999,
     price: 899,
     advance: 399,
     cod: 500,
     badge: "TRENDING",
-    image: "/product-4.jpg",
-    rating: 4.5,
-    ratings: 2626
   },
 
   {
     id: 5,
     name: "Royal Accessories Combo",
     short: "Watch + Bracelet + Chain + Wallet + Sunglasses",
+    image: "/product-5.jpg",
     mrp: 2499,
     price: 799,
     advance: 399,
     cod: 400,
     badge: "ROYAL DEAL",
-    image: "/product-5.jpg",
-    rating: 4.5,
-    ratings: 3241
   },
 
   {
     id: 6,
     name: "Complete Men's Style Combo",
     short: "Shirt + Pant + Shoes + Watch + Belt + Wallet",
+    image: "/product-6.jpg",
     mrp: 4499,
     price: 1199,
     advance: 599,
     cod: 600,
     badge: "PREMIUM",
-    image: "/product-6.jpg",
-    rating: 4.5,
-    ratings: 4182
-  }
+  },
 ];
