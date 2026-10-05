@@ -833,21 +833,3 @@ button {
     height: 240px;
   }
 }
-/* REMOVE BROKEN QR WITHOUT TOUCHING REACT */
-.qr-wrap {
-  display: none !important;
-}
-
-.payment-qr {
-  display: none !important;
-}
-
-/* Hide the old QR instruction */
-.payment-instructions li:nth-child(2) {
-  display: none !important;
-}
-
-/* Hide old QR sentence */
-.payment-card > p {
-  display: none !important;
-}
