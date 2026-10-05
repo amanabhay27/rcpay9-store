@@ -104,14 +104,75 @@ function Categories({ setPage }) {
 }
 
 function SaleBanner() {
-  return (
-    <section className="sale-banner">
-      <img src="/hero.png" alt="Mega sale" />
+  const slides = [
+    "/hero-1.png",
+    "/hero-2.png",
+    "/hero-3.png",
+    "/hero-4.png",
+  ];
 
-      <div className="banner-fallback">
-        <small>MEGA FASHION SALE</small>
-        <strong>SALE IS LIVE</strong>
-        <span>Premium men's fashion deals</span>
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setCurrent((index) => (index + 1) % slides.length);
+    }, 2000);
+
+    return () => clearInterval(id);
+  }, []);
+
+  return (
+    <section
+      className="sale-banner"
+      style={{
+        position: "relative",
+        width: "100%",
+        overflow: "hidden",
+        background: "#fff",
+      }}
+    >
+      <img
+        src={slides[current]}
+        alt="Flikart Mega Sale"
+        style={{
+          width: "100%",
+          display: "block",
+          height: "auto",
+          objectFit: "cover",
+        }}
+      />
+
+      <div
+        style={{
+          position: "absolute",
+          left: "50%",
+          bottom: "10px",
+          transform: "translateX(-50%)",
+          display: "flex",
+          gap: "6px",
+          zIndex: 2,
+        }}
+      >
+        {slides.map((_, index) => (
+          <button
+            key={index}
+            type="button"
+            aria-label={`Show sale banner ${index + 1}`}
+            onClick={() => setCurrent(index)}
+            style={{
+              width: index === current ? "20px" : "7px",
+              height: "7px",
+              padding: 0,
+              border: "none",
+              borderRadius: "20px",
+              background:
+                index === current ? "#ffffff" : "rgba(255,255,255,0.55)",
+              cursor: "pointer",
+              transition: "all 0.2s ease",
+              boxShadow: "0 1px 4px rgba(0,0,0,0.25)",
+            }}
+          />
+        ))}
       </div>
     </section>
   );
