@@ -924,8 +924,10 @@ function Payment({ order, setPage }) {
 
         <div className="qr-wrap">
           <img
-            src="/payment-qr.png"
-            alt="Flikart UPI payment QR code"
+            src={`https://api.qrserver.com/v1/create-qr-code/?size=320x320&data=${encodeURIComponent(
+              `upi://pay?pa=${UPI_ID}&pn=${STORE_NAME}&am=${Number(order.advance || 0).toFixed(2)}&cu=INR&tn=${encodeURIComponent(`Flikart Order ${order.id}`)}`
+            )}`}
+            alt={`Flikart UPI QR for ₹${Number(order.advance || 0).toFixed(0)}`}
             className="payment-qr"
           />
         </div>
@@ -949,8 +951,7 @@ function Payment({ order, setPage }) {
             </li>
 
             <li>
-              Pay exactly ₹
-              {Number(order.advance || 0).toFixed(0)}.
+              The amount ₹{Number(order.advance || 0).toFixed(0)} is already set in the QR.
             </li>
 
             <li>
