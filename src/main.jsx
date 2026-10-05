@@ -117,7 +117,7 @@ function SaleBanner() {
   );
 }
 
-function ProductCard({ product, addToCart, buyNow }) {
+function ProductCard({ product, setSelectedProduct, setPage }) {
   const discount = Math.max(
     0,
     Math.round(((product.mrp - product.price) / product.mrp) * 100)
@@ -125,8 +125,25 @@ function ProductCard({ product, addToCart, buyNow }) {
 
   const ratings = 3200 + product.id * 827;
 
+  function openProduct() {
+    setSelectedProduct(product);
+    setPage("product");
+  }
+
   return (
-    <article className="product-card">
+    <article
+      className="product-card"
+      onClick={openProduct}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          openProduct();
+        }
+      }}
+      style={{ cursor: "pointer" }}
+    >
       <div className="product-image">
         <img src={product.image} alt={product.name} />
       </div>
@@ -150,28 +167,12 @@ function ProductCard({ product, addToCart, buyNow }) {
         </div>
 
         <p className="delivery">Free Delivery in Two Days</p>
-
-        <div className="product-actions">
-          <button
-            className="add-btn"
-            onClick={() => addToCart(product)}
-          >
-            ADD
-          </button>
-
-          <button
-            className="buy-btn"
-            onClick={() => buyNow(product)}
-          >
-            BUY NOW
-          </button>
-        </div>
       </div>
     </article>
   );
 }
 
-function Home({ search, setPage, addToCart, buyNow }) {
+function Home({ search, setPage, setSelectedProduct }) {
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
 
@@ -211,8 +212,8 @@ function Home({ search, setPage, addToCart, buyNow }) {
               <ProductCard
                 key={p.id}
                 product={p}
-                addToCart={addToCart}
-                buyNow={buyNow}
+                setSelectedProduct={setSelectedProduct}
+                setPage={setPage}
               />
             ))
           ) : (
@@ -227,7 +228,7 @@ function Home({ search, setPage, addToCart, buyNow }) {
   );
 }
 
-function Shop({ search, addToCart, buyNow }) {
+function Shop({ search, setSelectedProduct, setPage }) {
   const filtered = products.filter((p) =>
     `${p.name} ${p.short}`
       .toLowerCase()
@@ -246,10 +247,277 @@ function Shop({ search, addToCart, buyNow }) {
           <ProductCard
             key={p.id}
             product={p}
-            addToCart={addToCart}
-            buyNow={buyNow}
+            setSelectedProduct={setSelectedProduct}
+            setPage={setPage}
           />
         ))}
+      </div>
+    </main>
+  );
+}
+
+function ProductDetails({
+  product,
+  setPage,
+  addToCart,
+  buyNow,
+}) {
+  if (!product) {
+    return (
+      <main className="page center-page">
+        <div className="form-card">
+          <h2>Product Not Found</h2>
+          <p>Please select a product again.</p>
+          <button
+            className="full-action"
+            onClick={() => setPage("home")}
+          >
+            GO TO SHOP
+          </button>
+        </div>
+      </main>
+    );
+  }
+
+  const discount = Math.max(
+    0,
+    Math.round(((product.mrp - product.price) / product.mrp) * 100)
+  );
+
+  const ratings = 3200 + product.id * 827;
+
+  return (
+    <main className="page">
+      <style>{`
+        .flikart-product-detail {
+          max-width: 900px;
+          margin: 0 auto;
+          background: #fff;
+          border-radius: 10px;
+          padding: 16px;
+          box-sizing: border-box;
+        }
+
+        .flikart-detail-layout {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+          gap: 24px;
+          align-items: start;
+        }
+
+        .flikart-detail-image {
+          width: 100%;
+          background: #f7f7f7;
+          border-radius: 10px;
+          overflow: hidden;
+        }
+
+        .flikart-detail-image img {
+          width: 100%;
+          max-height: 520px;
+          object-fit: contain;
+          display: block;
+        }
+
+        .flikart-detail-buttons {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 10px;
+        }
+
+        @media (max-width: 700px) {
+          .flikart-product-detail {
+            padding: 10px;
+          }
+
+          .flikart-detail-layout {
+            grid-template-columns: 1fr;
+            gap: 16px;
+          }
+
+          .flikart-detail-image img {
+            max-height: 430px;
+          }
+
+          .flikart-detail-buttons {
+            position: sticky;
+            bottom: 58px;
+            background: #fff;
+            padding: 8px 0;
+            z-index: 5;
+          }
+        }
+      `}</style>
+
+      <div className="flikart-product-detail">
+        <button
+          type="button"
+          onClick={() => setPage("home")}
+          style={{
+            border: "none",
+            background: "transparent",
+            fontSize: "16px",
+            fontWeight: 700,
+            cursor: "pointer",
+            padding: "6px 0 14px",
+          }}
+        >
+          ← Back to Shopping
+        </button>
+
+        <div className="flikart-detail-layout">
+          <div className="flikart-detail-image">
+            <img
+              src={product.image}
+              alt={product.name}
+            />
+          </div>
+
+          <div style={{ padding: "4px" }}>
+            <div
+              style={{
+                display: "inline-block",
+                background: "#2874f0",
+                color: "#fff",
+                borderRadius: "4px",
+                padding: "5px 9px",
+                fontSize: "12px",
+                fontWeight: 800,
+                marginBottom: "10px",
+              }}
+            >
+              {product.badge || "BEST DEAL"}
+            </div>
+
+            <h1
+              style={{
+                fontSize: "28px",
+                lineHeight: 1.25,
+                margin: "4px 0 12px",
+              }}
+            >
+              {product.name}
+            </h1>
+
+            <p
+              style={{
+                margin: "0 0 14px",
+                color: "#666",
+                fontSize: "15px",
+              }}
+            >
+              {product.short}
+            </p>
+
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                flexWrap: "wrap",
+                marginBottom: "12px",
+              }}
+            >
+              <span
+                style={{
+                  background: "#0a8f3d",
+                  color: "#fff",
+                  borderRadius: "4px",
+                  padding: "4px 7px",
+                  fontWeight: 700,
+                  fontSize: "13px",
+                }}
+              >
+                4.5 ★
+              </span>
+              <span style={{ color: "#666", fontSize: "14px" }}>
+                {ratings} Ratings
+              </span>
+            </div>
+
+            <div style={{ marginBottom: "8px" }}>
+              <span
+                style={{
+                  color: "#0a8f3d",
+                  fontWeight: 800,
+                  marginRight: "10px",
+                }}
+              >
+                {discount}% Off
+              </span>
+              <del style={{ color: "#777" }}>
+                ₹{product.mrp}.00
+              </del>
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                marginBottom: "12px",
+              }}
+            >
+              <strong style={{ fontSize: "32px" }}>
+                ₹{product.price}.00
+              </strong>
+              <span className="assured">✓ Assured</span>
+            </div>
+
+            <p
+              style={{
+                color: "#0a8f3d",
+                fontWeight: 700,
+                margin: "8px 0 18px",
+              }}
+            >
+              Free Delivery in Two Days
+            </p>
+
+            <div
+              style={{
+                background: "#f5f7f9",
+                borderRadius: "8px",
+                padding: "14px",
+                marginBottom: "16px",
+              }}
+            >
+              <b>Payment & Delivery</b>
+              <p
+                style={{
+                  margin: "7px 0 0",
+                  color: "#666",
+                  fontSize: "14px",
+                  lineHeight: 1.5,
+                }}
+              >
+                Pay the advance amount by UPI. The remaining balance
+                is collected by COD on delivery.
+              </p>
+            </div>
+
+            <div className="flikart-detail-buttons">
+              <button
+                type="button"
+                className="add-btn"
+                onClick={() => {
+                  addToCart(product);
+                  setPage("cart");
+                }}
+              >
+                ADD TO CART
+              </button>
+
+              <button
+                type="button"
+                className="buy-btn"
+                onClick={() => buyNow(product)}
+              >
+                BUY NOW
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
   );
@@ -652,6 +920,8 @@ function Track() {
   const [id, setId] = useState("");
   const [order, setOrder] = useState(null);
 
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
   async function track(e) {
     e.preventDefault();
 
@@ -829,6 +1099,8 @@ function App() {
 
   const [order, setOrder] = useState(null);
 
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
   function addToCart(product) {
     setCart((current) => {
       const existing = current.find(
@@ -906,14 +1178,22 @@ function App() {
         <Home
           search={search}
           setPage={setPage}
-          addToCart={addToCart}
-          buyNow={buyNow}
+          setSelectedProduct={setSelectedProduct}
         />
       )}
 
       {page === "shop" && (
         <Shop
           search={search}
+          setSelectedProduct={setSelectedProduct}
+          setPage={setPage}
+        />
+      )}
+
+      {page === "product" && (
+        <ProductDetails
+          product={selectedProduct}
+          setPage={setPage}
           addToCart={addToCart}
           buyNow={buyNow}
         />
