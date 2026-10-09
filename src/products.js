@@ -1,13 +1,14 @@
+
 export const products = [
   {
     id: 7,
-    name: "iPhone 17 Pro Max 2TB",
-    short: "Premium smartphone deal",
+    name: "Vivo T4R 5G White",
+    short: "6.77-inch AMOLED 120Hz Display + 5G Performance",
     image: "/product-7.jpg",
-    mrp: 229900,
-    price: 2199,
+    mrp: 19999,
+    price: 999,
     advance: 499,
-    cod: 1700,
+    cod: 500,
     badge: "MEGA SALE",
   },
 
